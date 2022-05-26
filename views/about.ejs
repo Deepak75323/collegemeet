@@ -1,0 +1,46 @@
+<section class="about section" id="about">
+    <h2 data-heading="My Intro" class="section__title">About Me</h2>
+
+     
+    <div class="about__container container grid">
+     <% if( profile_user.avatar)
+      {%>
+        <img src="<%= profile_user.avatar %>" alt="<%= profile_user.name %>" width="100px" class="about__img">
+
+      <%}
+      else
+      {%>
+         <img src="/images/avatar7.png" alt="<%= profile_user.username %>" width="100px" class="about__img">
+
+      <%}%>
+         <div class="about__data">
+        <h3 class="about__heading">HI,i am <%=profile_user.username %>,Based in india</h3>
+        <p class="about__description">
+          <%= profile_user.description %>
+        </p>
+        <div class="about__info grid">
+          <div class="about__box">
+            <i class="uil uil-award about__icon"></i>
+            <h3 class="about__title">Experience</h3>
+            <span class="about__subtitle"><%=profile_user.experience %></span>
+          </div>
+
+          <div class="about__box">
+            <i class="uil uil-suitcase-alt about__icon"></i>
+            <h3 class="about__title">Completed</h3>
+            <span class="about__subtitle"> <%= profile_user.project %>+projects</span>
+          </div>
+
+          <div class="about__box">
+            <i class="uil uil-book-open about__icon"></i>
+            <h3 class="about__title">Expertise</h3>
+            <span class="about__subtitle"><%=profile_user.expertise %></span>
+          </div>
+        </div>
+
+        <a href="/contact" class="button">
+          <i class="uil uil-navigator"></i>Contact Me
+        </a>
+      </div>
+    </div>
+  </section>

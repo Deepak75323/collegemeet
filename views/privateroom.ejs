@@ -1,0 +1,41 @@
+<div class="join-container privateroom">
+    <header class="join-header">
+        <h1><i class="fas fa-smile"></i> ChatROOM</h1>
+    </header>
+    <main class="join-main">
+        <form action="/enterroom">
+            <div class="form-control">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    placeholder="Enter username..."
+                    required
+                />
+            </div>
+            <div class="form-control">
+                <label for="room">Room</label>
+                <select name="room" id="room">
+                    <option value="CSE">Room CSE</option>
+                    <option value="IT">ROOM IT</option>
+                    <option value="SE">ROOM SE</option>
+                    <option value="MCE">ROOM MCE</option>
+                    <option value="ECE">ROOM ECE</option>
+                    <option value="EE">ROOM EE</option>
+                    <option value="MECH">ROOM MECH</option>
+                    <option value="EP">ROOM EP</option>
+                    <option value="CIVIL">ROOM CIVIL</option>
+                    <option value="BT">ROOM BT</option>
+
+                </select>
+            </div>
+            <button type="submit" class="btn-room text-white">Join Chat</button>
+        </form>
+    </main>
+</div>
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/room.js"></script>

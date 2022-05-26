@@ -1,0 +1,66 @@
+<nav class="navbar">
+  <div class="max-width">
+
+      <ul class="menu">
+          <li><a href="/" class="menu-btn">Home</a></li>
+          <% if (locals.user)
+          {%>
+
+            <li><a href="/about/<%=user.id%>" class="menu-btn">About</a></li>
+          <%}%>
+          <% if (locals.user)
+          {%>
+
+            <li><a href="/skills" class="menu-btn">Skills</a></li>
+          <%}%>
+          
+          <li><a href="/contact" class="menu-btn">Contact</a></li>
+
+
+          <li><a href="/work" class="menu-btn">Notice</a></li>
+
+          <% if (locals.user)
+          {%>
+          <li><a href="/privateroom" class="menu-btn">Room</a></li>
+          <%}
+          %>
+          
+          <% if (locals.user)
+          {%>
+
+
+            <% if (user.username)
+            {%>
+              <li>
+              <a href="/userprofile" class="menu-btn"><%= user.username %></a>
+              </li>
+
+            <%}
+            else
+            {%>
+              <li>
+              <a href="/userprofile" class="menu-btn"><%= user.name %></a>
+              </li>
+
+           <%}%>
+          <li>
+            <a href="/signout" class="menu-btn">sign out</a>
+          </li>
+        <%}
+        else
+        {%>
+
+<li>
+  <a href="/signin" class="menu-btn">sign in</a>
+</li>
+
+<%}%>
+
+          
+          
+      <!-- </ul>
+      <div class="menu-btn">
+          <i class="fas fa-bars"></i>
+      </div> -->
+  </div>
+</nav>

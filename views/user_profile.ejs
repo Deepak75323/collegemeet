@@ -1,0 +1,115 @@
+
+ <div class="profile_edit">
+
+
+
+    <div class="container-xl px-4 mt-4">
+        
+        <hr class="mt-0 mb-4">
+        <div class="row">
+            <div class="col-xs-8 container">
+                <!-- Profile picture card-->
+                <div class="card_edit mb-4 mb-xl-0">
+                    <div class="card-header text-center blog_upload">Profile Picture</div>
+                    <div class="card-body text-center">
+                        <!-- Profile picture image-->
+                      <%  if(locals.user)
+                      {%>
+
+
+                        <img class="img-account-profile rounded-circle mb-2" src="<%= user.avatar %>" alt="">
+                     <% }
+                     else
+                     {%>
+                        <img class="img-account-profile rounded-circle mb-2" src="/images/avatar7.png" alt="hjkhkj">
+                    <%}
+                     
+                     %>
+                        <!-- Profile picture help block-->
+                        <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                        <!-- Profile picture upload button-->
+                        <!-- <button class="btn blog_upload" type="button">Upload new image</button> -->
+                    </div>
+                </div>
+            
+            
+                <!-- Account details card-->
+                <div class="card_edit mb-4">
+                    <div class="card-body">
+                        <form action="/update/<%=user.id%>" method="post" enctype="multipart/form-data">
+                            
+                            <label class="uploading_part" for="pic">
+                                <span>Click to upload image</span>
+                                <input class="blog_image" name="avatar" type="file" id="pic">
+                            </label>
+                            <div class="card-header text-center blog_upload">Account Details</div>
+                            <!-- Form Group (username)-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputUsername">name</label>
+                                <input class="form-control-profile" id="inputUsername" name="name" type="text" placeholder="Enter your username">
+                            </div>
+                            <!-- Form Row-->
+
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputUsername">password(write current if you don't wanaa change)</label>
+                                <input class="form-control-profile" id="inputpassword" name="password" type="password" placeholder="Enter your password">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputUsername">confirm password(write the password)</label>
+                                <input class="form-control-profile" id="inputpassword" name="confirm_password" type="password" placeholder="Enter your password">
+                            </div>
+                            <div class="row gx-3 mb-3">
+                            
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="expertise">Expertise</label>
+                                    <input class="form-control-profile" id="expertise" type="text" name="expertise" placeholder="Enter your expertise">
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="small mb-1" for="experience">Experience</label>
+                                    <input class="form-control-profile" id="experience" type="text" name="experience" placeholder="Enter your experience" >
+                                </div>
+                            </div>
+                        
+                            <!-- Form Group (email address)-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                                <input class="form-control-profile" id="inputEmailAddress" type="email" name="email" placeholder="Enter your email address" >
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputEmailAddress">projects</label>
+                                <input class="form-control-profile" id="inputprject" type="number" name="project" placeholder="Enter your number of projects" >
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputleetcode">Description</label>
+                                <textarea class="form-control-profile" id="inputdescribe" rows="5" cols="2" type="text" name="describe" placeholder="Describe yourself" ></textarea>
+                            </div>
+                            <!-- Form Group (leetcode id)-->
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputleetcode">Leetcode ID</label>
+                                <input class="form-control-profile" id="inputleetcode" type="text"  placeholder="Enter your Leetcode id" name="leetcode" >
+                            </div>
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputcodeforces">Codeforces ID</label>
+                                <input class="form-control-profile" id="inputcodeforces" type="text" placeholder="Enter your codeforces id" name="codechef" >
+                            </div>
+                            <div class="mb-3">
+                                <label class="small mb-1" for="inputcodechef">CodeChef ID</label>
+                                <input class="form-control-profile" id="inputcodechef" type="text" placeholder="Enter your codechef id" name="codeforces" >
+                            </div>
+                            <!-- Form Row-->
+                         
+                            <!-- Save changes button-->
+                            <button class="btn blog_upload" type="button ">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+
+
+</div>

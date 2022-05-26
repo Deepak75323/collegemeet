@@ -1,0 +1,202 @@
+<div class="blog_top m-2">
+  <div id="main-content" class="blog-page">
+    <div class="container">
+      <div class="row clearfix">
+        <div class="col-lg-8 col-md-12 left-box">
+          <div class="card_details single_post">
+            <div class="body">
+              <div class="img-post">
+                <img
+                  class="d-block img-fluid"
+                  src="<%= post.blog_image %>"
+                  alt="First slide"
+                />
+              </div>
+              <h3 class="stop_flow">
+                <a href="blog-details.html" class="text-white"
+                  ><%=post.title %></a
+                >
+              </h3>
+              <p class="text-white stop_flow"><%= post.description %></p>
+              <br>
+              <% if (locals.user){ %>
+                <a class="toggle-like-button" href="/likes/toggle/?id=<%=post._id%>&type=Post">
+                   <h5><%= post.likes.length %> Likes</h5>
+                   <!-- <div class="heart-btn">
+                    <div class="content">
+                      <span class="heart"></span>
+                      <span class="text">Like</span>
+                      <span class="numb"></span>
+                    </div>
+                  </div> -->
+                </a>
+            <% }else{ %>
+               <h5> <%= post.likes.length %> Likes</h5>
+        
+               <!-- <div class="heart-btn">
+                <div class="content">
+                  <span class="heart"></span>
+                  <span class="text">Like</span>
+                  <span class="numb"></span>
+                </div>
+              </div> -->
+            <% } %>
+            
+            </div>
+          </div>
+          <div class="card_details">
+            <div class="header">
+              <h2>Comments</h2>
+            </div>
+
+            <% for(comment of post.comments) {%>
+            <div class="body">
+
+              <!-- && locals.user.id == comment.user.id -->
+              <% if( locals.user &&  locals.user.id == comment.user) { %>
+                <a href="/comments/destroy/<%=comment.id%>">
+                  <h6>Delete comment</h6>
+                  <i class="uil uil-trash-alt"></i>
+                </a>
+                <% }%>
+              <ul class="comment-reply list-unstyled">
+                <li class="row clearfix">
+                  <div class="icon-box col-md-2 col-4">
+                  <%  if(comment.user.avatar)
+                  {%>
+                    <img
+                    class="img-fluid img-thumbnail"
+                    src="<%=comment.user.avatar%>"
+                    alt="Awesome Image"
+                  />
+
+                  <%}else{%>
+                    
+                    <img
+                      class="img-fluid img-thumbnail"
+                      src="https://bootdey.com/img/Content/avatar/avatar7.png"
+                      alt="Awesome Image"
+                    />
+                    <%}%>
+                  </div>
+                  <div class="text-box col-md-10 col-8 p-l-0 p-r0 text-white">
+                    <h5 class="m-b-0"><%= comment.user.username %></h5>
+                    <p class="text-white"><%= comment.content %></p>
+
+                  
+                    <ul class="list-inline">
+                      <li>
+                        <a href="javascript:void(0);"
+                          ><%= comment.createdAt %></a
+                        >
+                      </li>
+                   
+                    </ul>
+                    <ul class="list-inline">
+                      
+                        <li>
+                          <% if (locals.user){ %>
+                            <a class="toggle-like-button" href="/likes/toggle/?id=<%=comment._id%>&type=Comment">
+                               <h5><%= comment.likes.length %> Likes</h5>
+                               <!-- <div class="heart-btn">
+                                <div class="content">
+                                  <span class="heart"></span>
+                                  <span class="text">Like</span>
+                                  <span class="numb"></span>
+                                </div>
+                              </div> -->
+                            </a>
+                        <% }else{ %>
+                           <h5> <%= post.likes.length %> Likes</h5>
+                    
+                           <!-- <div class="heart-btn">
+                            <div class="content">
+                              <span class="heart"></span>
+                              <span class="text">Like</span>
+                              <span class="numb"></span>
+                            </div>
+                          </div> -->
+                        <% } %>
+                        </li>
+                      
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+           
+            </div>
+            <%}%>
+          </div>
+
+          <% if(locals.user) { %>
+          <div class="card_details">
+            <div class="header">
+              <h2>
+                Leave a reply
+                <small
+                  >Your data will not be published. Required fields are
+                  marked*</small
+                >
+              </h2>
+            </div>
+            <div class="body">
+              <div class="comment-form">
+                <form
+                  action="/comments/create"
+                  method="post"
+                  class="row clearfix"
+                >
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <input
+                        type="hidden"
+                        name="post"
+                        value="<%= post._id %>"
+                      />
+                      <textarea
+                        rows="4"
+                        name="content"
+                        class="form-control no-resize"
+                        placeholder="Please type what you want..."
+                      ></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-block blog_upload">
+                      SUBMIT
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <%}%>
+        </div>
+        <div class="col-lg-4 col-md-12 right-box">
+          <div class="card_details">
+            <div class="header">
+              <h2>Popular Posts</h2>
+            </div>
+            <div class="body widget popular-post">
+              <div class="row">
+                <div class="col-lg-12">
+                  <% for(post of posts) {%>
+
+                  <div class="single_post">
+                    <p class="text-white m-b-0"><%=post.title%></p>
+                    <span class="text-white"><%=post.createdAt %></span>
+                    <div class="img-post">
+                      <a href="/posts/<%=post._id %>"
+                        ><img src="<%= post.blog_image %>" alt="Awesome Image" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <%}%>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

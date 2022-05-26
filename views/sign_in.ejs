@@ -1,0 +1,73 @@
+ <div class="wrapper">
+    <div class="title-text">
+       <div class="title login">
+          Login Form
+       </div>
+       <div class="title signup">
+          Signup Form
+       </div>
+    </div>
+    <div class="form-container">
+       <div class="slide-controls">
+          <input type="radio" name="slide" id="login" checked>
+          <input type="radio" name="slide" id="signup">
+          <label for="login" class="slide login">Login</label>
+          <label for="signup" class="slide signup">Signup</label>
+          <div class="slider-tab"></div>
+       </div>
+       <div class="form-inner">
+          <form action="/createsession" method="post" class="login">
+             <div class="field">
+                <input type="text" placeholder="Username" name="username" required>
+             </div>
+             <div class="field">
+                <input type="password" placeholder="Password" name="password" required>
+             </div>
+             <div class="pass-link">
+                <a href="#">Forgot password?</a>
+             </div>
+             <div class="field btn">
+                <div class="btn-layer"></div>
+                <input type="submit" name="submit" value="Login">
+             </div>
+             <div class="signup-link">
+                Not a member? <a href="">Signup now</a>
+             </div>
+          </form>
+          <form action="/create" method="post" class="signup">
+             <div class="field">
+                <input type="text" placeholder="Email Address" name="email"required>
+             </div>
+             <div class="field">
+                <input type="text" placeholder="username" name="username"required>
+             </div>
+             <div class="field">
+                <input type="password" placeholder="Password" name="password" required>
+             </div>
+             <div class="field">
+                <input type="password" placeholder="Confirm password" name="confirm_password" required>
+             </div>
+             <div class="field btn">
+                <div class="btn-layer"></div>
+                <input type="submit" name="submit" value="Signup">
+             </div>
+            </form>
+         </div>
+         <div class='g-sign-in-button'>
+           <div class=content-wrapper>
+              <a href="/users/auth/google">
+     
+                 <div class='logo-wrapper'>
+                    <img src='https://developers.google.com/identity/images/g-logo.png'>
+                </div>
+                <span class='text-container'>
+              <span>Sign in with Google</span>
+            </span>
+     
+              </a>
+           </div>
+       </div>
+    </div>
+
+ 
+ </div>

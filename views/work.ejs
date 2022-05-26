@@ -1,0 +1,172 @@
+<section class="work section">
+  <h2 data-heading="Information" class="section__title">Recent Notices</h2>
+  
+  <div class="work__filters" id="work-link">
+    <span class="work__item active-work" data-filter="all">All</span>
+    <span class="work__item" data-filter=".web">Web</span>
+    <span class="work__item" data-filter=".app">App</span>
+    <span class="work__item" data-filter=".design">Design</span>
+  </div>
+
+
+<div class="work__container container grid">
+
+ <%for(post of posts)
+    {%>
+      <div class="work__card mix <%= post.category %>">
+        <% if(locals.user && locals.user.id==post.user.id)
+        {
+          %>
+          <a href="/posts/destroy/<%=post.id%>" class="work__edit">
+            <i class="uil uil-trash-alt"></i>
+          </a>
+          <%
+        }%>
+
+        <img src="<%= post.blog_image%>" alt="" class="work__img">
+      <h3 class="work__title"><%=post.category%> design</h3>
+      <% if (locals.user){ %>
+        <a class="toggle-like-button" href="/likes/toggle/?id=<%=post._id%>&type=Post">
+           <h5><%= post.likes.length %> Likes</h5>
+           <!-- <div class="heart-btn">
+            <div class="content">
+              <span class="heart"></span>
+              <span class="text">Like</span>
+              <span class="numb"></span>
+            </div>
+          </div> -->
+        </a>
+    <% }else{ %>
+       <h5> <%= post.likes.length %> Likes</h5>
+
+       <!-- <div class="heart-btn">
+        <div class="content">
+          <span class="heart"></span>
+          <span class="text">Like</span>
+          <span class="numb"></span>
+        </div>
+      </div> -->
+    <% } %>
+
+      <span class="work__button">
+       <% if(post.user.username)
+       {%>
+        <a href="/posts/<%=post.id%>"><%= post.user.username %></a>
+       <%}
+       else if(post.user.email){%>
+       <a href="/posts/<%=post.id%>"><%= post.user.email %></a>
+
+         <%}%>
+        <i class="uil uil-arrow-right work__button-icon"></i>
+      </span>
+        <div class="portfolio__item-details">
+          <h3 class="details__title"><%=post.title%></h3>
+          <p class="details__description"><%=post.description%></p>
+       
+          <ul class="details__info">
+            <li>created -<span><%= post.created_At %></span></li>
+            <li>technologies -<span>html css</span></li>
+            <li>role -<span>4 dec 2020</span></li>
+            <li>view-<span><a href="#">www.domain.com</a></span>
+          </ul>
+        </div>
+
+    </div>
+    <%}%>
+
+
+</div>
+
+
+<% if(locals.user){%>
+
+
+
+<div class="new_blog">
+  <h3 class="Adding_blog">Add Notice</h3>
+  
+  <form action="/posts/create" method="POST" enctype="multipart/form-data">
+    <h2 style="margin:3px;">Enter Your Title</h2>
+    <input type="text" name="title" style="width:500px;padding:4px;" placeholder="Title" class="blog_title">
+    <h2 style="margin:3px;">Enter Your Categoty</h2>
+    <input type="text" name="category" style="width:500px;padding:4px;" placeholder="categoty" class="blog_category">
+    <h2 style="margin:5px;">Enter Your Description</h2>
+    <textarea type="text" name="description" rows="4" cols="50" style="width:500px;padding:5px;" placeholder="Description" class="blog_description">
+    </textarea>
+    <label class="uploading_part" for="pic">
+      <span>Click to upload image</span>
+      <input class="blog_image" name="blog_image" type="file" id="pic">
+    </label>
+    <div>
+    <input type="submit" class="blog_upload" name="submit" style="width:500px;padding:4px;margin:10px;" value="Upload" class="blog_submit">
+    </div>
+
+</div>
+
+
+
+<%}%>
+
+
+<h2 class="all_users"> Students </h2> 
+
+
+
+
+  <div class="work__container container grid">
+
+  <%for(user of all_users)
+    {%>
+      <div class="work__card mix <%= user.category %>">
+  
+      <%  if(user.avatar)
+        {%>
+
+          <img src="<%= user.avatar%>" alt="" class="work__img">
+
+       <% }
+       else
+       {%>
+        <img src="/images/avatar7.png" alt="" class="work__img">
+      
+        <% }%>
+    
+    
+    
+
+      <span class="work__button">
+       <% if(user.username )
+       {%>
+        <a href="/about/<%=user.id%>"><%= user.username %></a>
+       <%}
+       else if(user.email){%>
+       <a href="/about/<%=user.id%>"><%= user.email %></a>
+
+         <%}%>
+        <i class="uil uil-arrow-right work__button-icon"></i>
+      </span>
+        <div class="portfolio__item-details">
+          
+        
+       
+          <ul class="details__info">
+            
+            <li>view-<span><a href="/about/<%=user.id%>"><%= user.username %></a></span>
+          </ul>
+        </div>
+
+    </div>
+    <%}%>
+
+
+  </div>
+  
+  
+
+
+
+
+</section>
+
+
+
