@@ -22,14 +22,14 @@ const development = {
     port: 587,
     secure: false,
     auth: {
-      user: "vevekdivcoder1@gmail.com",
-      pass: "vivekdivcodernumber1",
+      user: "your email address for sending mail",
+      pass: "password of yours email address",
     },
   },
   google_client_id:
-    "187158773165-hdran4fu4ohspnoivuijn5u3n14pav72.apps.googleusercontent.com",
-  google_client_secret: "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",
-  google_call_back_url: "http://localhost:8000/users/auth/google/callback",
+    "your google client id",
+  google_client_secret: "your google client secret",
+  google_call_back_url: "your google call back url",
 
   morgan: {
     mode: "dev",

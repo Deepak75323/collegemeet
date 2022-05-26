@@ -1,8 +1,10 @@
 const express = require('express');
+require('dotenv').config();
 const env= require('./config/environment.js');
 const logger=require('morgan');
 
 const cookieParser=require('cookie-parser');
+console.log(process.env);
 
 const app = express();
 
@@ -18,7 +20,7 @@ const {
 
 
 
-const port= process.env.PORT ||8000;
+const port= process.env.PORT || 8000;
 const db=require('./config/mongoose');
 require("./processor/index");
 const session=require('express-session');
