@@ -41,14 +41,18 @@ $(document).ready(function(){
 
 
     
-    var mixerBlog = mixitup('.work__container', {
+    var postsGrid = document.getElementById('posts-grid');
+    if (!postsGrid) return;
+
+    var mixerBlog = mixitup('#posts-grid', {
         selectors: {
-            target: '.work__card'
+            target: '.notice-card'
         },
         animation: {
             duration: 300
         }
     });
+    window.mixerBlog = mixerBlog;
 
 
 

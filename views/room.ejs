@@ -1,150 +1,326 @@
+<div class="studio-app">
 
+<% if (locals.displayName) { %>
+<script>
+  sessionStorage.setItem("username", <%- JSON.stringify(displayName) %>);
+</script>
+<% } %>
+<% if (locals.turnIce) { %>
+<script>
+  window.__ICE_TURN = <%- JSON.stringify(turnIce) %>;
+</script>
+<% } %>
 
-<div class="room-outlet">
-
-
-
-    <div class="custom-modal" id='recording-options-modal'>
-        <div class="custom-modal-content">
-            <div class="row text-center">
-                <div class="col-md-6 mb-2 bg-danger">
-                    <span class="record-option" id='record-video'>Record video</span>
-                </div>
-                <div class="col-md-6 mb-2 bg-danger">
-                    <span class="record-option" id='record-screen'>Record screen</span>
-                </div>
-            </div>
-      
-            <div class="row mt-3">
-                <div class="col-md-12 text-center bg-danger">
-                    <button class="btn btn-outline-danger" id='closeModal'>Close</button>
-                </div>
-            </div>
+  <!-- Partner video modal -->
+  <div id="partner-video-modal" class="partner-modal" hidden>
+    <div class="partner-modal__backdrop" id="partner-modal-backdrop"></div>
+    <div class="partner-modal__panel">
+      <div class="partner-modal__header">
+        <span class="partner-modal__name" id="partner-modal-name">Partner</span>
+        <div class="partner-modal__controls">
+          <button class="partner-modal__btn" id="partner-modal-mute" title="Mute audio">
+            <i class="fas fa-volume-up"></i><span>Mute</span>
+          </button>
+          <button class="partner-modal__btn" id="partner-modal-hide-video" title="Hide video">
+            <i class="fas fa-video"></i><span>Hide video</span>
+          </button>
+          <button class="partner-modal__btn" id="partner-modal-fullscreen" title="Fullscreen">
+            <i class="fas fa-expand"></i>
+          </button>
+          <button class="partner-modal__btn partner-modal__btn--close" id="partner-modal-close" title="Close">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
       </div>
-      
-      <nav class="navbar bg-danger rounded-0 d-print-none">
-        <div class="text-white">Video Call</div>
-      
-        <div class="pull-right room-comm" hidden>
-            <span class="text-white mr-5 " hidden>
-                Unique Identifier: <span id='randomNumber'></span>
-            </span>
-      
-            <button class="btn btn-sm rounded-0 btn-no-effect bg-danger" id='toggle-video' title="Hide Video">
-                <i class="fa fa-video "></i>
-            </button>
-      
-            <button class="btn btn-sm rounded-0 btn-no-effect bg-danger" id='toggle-mute' title="Mute">
-                <i class="fa fa-microphone-alt "></i>
-            </button>
-      
-            <button class="btn btn-sm rounded-0 btn-no-effect bg-danger" id='share-screen' title="Share screen">
-                <i class="fa fa-desktop"></i>
-            </button>
-      
-            <button class="btn btn-sm rounded-0 btn-no-effect bg-danger" id='record' title="Record">
-                <i class="fa fa-dot-circle"></i>
-            </button>
-      
-            <button class="btn btn-sm text-white pull-right btn-no-effect bg-danger" id='toggle-chat-pane'>
-                <i class="fa fa-comment"></i> <span class="badge badge-danger very-small font-weight-lighter" id='new-chat-notification' hidden>New</span>
-            </button>
-      
-            <button class="btn btn-sm rounded-0 btn-no-effect bg-danger">
-                <a href="/" class="text-decoration-none"><i class="fa fa-sign-out-alt text-white" title="Leave"></i></a>
-            </button>
-        </div>
-      </nav>
-      
-      <div class="container-fluid" id='room-create' hidden>
-        <div class="row">
-            <div class="col-12 h2 mt-5 text-center">Create Room</div>
-        </div>
-        
-        <div class="row mt-2">
-            <div class="col-12 text-center">
-                <span class="form-text small text-danger" id='err-msg'></span>
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3">
-                <label for="room-name">Room Name</label>
-                <input type="text" id='room-name' class="form-control rounded-0" placeholder="Room Name">
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3">
-                <label for="your-name">Your Name</label>
-                <input type="text" id='your-name' class="form-control rounded-0" placeholder="Your Name">
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3">
-                <button id='create-room' class="btn btn-block rounded-0 btn-danger">Create Room</button>
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3" id='room-created'></div>
+      <div class="partner-modal__video-wrap" id="partner-modal-video-wrap">
+        <video id="partner-modal-video" autoplay playsinline class="partner-modal__video"></video>
+        <div class="partner-modal__no-video" id="partner-modal-no-video" hidden>
+          <i class="fas fa-video-slash" style="font-size:2rem;opacity:.4"></i>
+          <p>Video hidden</p>
         </div>
       </div>
-      
-      <div class="container-fluid" id='username-set' hidden>
-        <div class="row">
-            <div class="col-12 h4 mt-5 text-center">Your Name</div>
-        </div>
-        
-        <div class="row mt-2">
-            <div class="col-12 text-center">
-                <span class="form-text small text-danger" id='err-msg-username'></span>
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3">
-                <label for="username">Your Name</label>
-                <input type="text" id='username' class="form-control rounded-0" placeholder="Your Name">
-            </div>
-      
-            <div class="col-12 col-md-4 offset-md-4 mb-3">
-                <button id='enter-room' class="btn btn-block rounded-0 btn-danger">Enter Room</button>
-            </div>
-        </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Recording saved modal (used for both mid-call stop and leave-while-recording) -->
+  <div id="recording-saved-modal" class="rec-modal-overlay" hidden>
+    <div class="rec-modal">
+      <div class="rec-modal__icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
-      
-      <div class="container-fluid room-comm" hidden>
-        <div class="row">
-            <video class="local-video mirror-mode" id='local' volume='0' autoplay muted></video>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-12 main" id='main-section'>                    
-                <div class="row mt-2 mb-2" id='videos'></div>
-            </div>
-      
-            <div class="col-md-3 chat-col d-print-none mb-2 bg-danger" id='chat-pane' hidden>
-                <div class="row">
-                    <div class="col-12 text-center h2 mb-3">CHAT</div>
-                </div>
-      
-                <div id='chat-messages'></div>
-      
-                <form>
-                    <div class="input-group mb-3" >
-                        <textarea  id="chat-input" class="form-control rounded-0 chat-box border-danger" rows='3' placeholder="Type here..."></textarea>
-                        <div class="input-group-append" id='chat-input-btn'>
-                            <button type="button" class="btn btn-dark rounded-0 border-danger btn-no-effect">Send</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <h3 class="rec-modal__title">Recording Saved</h3>
+      <p class="rec-modal__body">Your recording is ready in this browser.<br><strong>Download</strong> saves a <code>.webm</code> file to your Downloads folder.<br><strong>Keep for Later</strong> stores it in this browser until you download or delete it.</p>
+      <div class="rec-modal__actions">
+        <button class="rec-modal__btn rec-modal__btn--primary" id="rec-download-btn">
+          <i class="fas fa-download"></i>&nbsp; Download Recording
+        </button>
+        <button class="rec-modal__btn rec-modal__btn--secondary" id="rec-keep-btn">Keep for Later</button>
+        <button class="rec-modal__btn rec-modal__btn--ghost-danger" id="rec-delete-btn">Delete Recording</button>
+        <button class="rec-modal__btn rec-modal__btn--cancel" id="rec-cancel-btn">Cancel</button>
       </div>
+    </div>
+  </div>
 
+  <!-- Pre-join: create room -->
+  <section class="studio-prejoin" id="room-create" hidden>
+    <div class="studio-prejoin__brand">
+      <div class="studio-prejoin__logo"><i class="fa fa-code-branch"></i></div>
+      <h1 class="studio-prejoin__title">Start interview session</h1>
+      <p class="studio-prejoin__subtitle">Collaborative editor, video, and chat for technical interviews.</p>
+    </div>
+    <div class="studio-card">
+      <p class="studio-error" id="err-msg"></p>
+      <div class="studio-field">
+        <label for="room-name">Session name</label>
+        <input type="text" id="room-name" class="studio-input" placeholder="e.g. Frontend loop">
+      </div>
+      <div class="studio-field">
+        <label for="your-name">Your name</label>
+        <input type="text" id="your-name" class="studio-input" placeholder="Your name" value="<%= typeof displayName !== 'undefined' ? displayName : '' %>">
+      </div>
+      <button type="button" id="create-room" class="studio-btn studio-btn--primary">Create session</button>
+      <p class="studio-hint" id="room-created"></p>
+    </div>
+  </section>
 
+  <!-- Pre-join: enter name -->
+  <section class="studio-prejoin" id="username-set" hidden>
+    <div class="studio-prejoin__brand">
+      <div class="studio-prejoin__logo"><i class="fa fa-user-friends"></i></div>
+      <h1 class="studio-prejoin__title">Join session</h1>
+      <p class="studio-prejoin__subtitle">Enter your name to join the live room.</p>
+    </div>
+    <div class="studio-card">
+      <p class="studio-error" id="err-msg-username"></p>
+      <div class="studio-field">
+        <label for="username">Your name</label>
+        <input type="text" id="username" class="studio-input" placeholder="Your name" value="<%= typeof displayName !== 'undefined' ? displayName : '' %>">
+      </div>
+      <button type="button" id="enter-room" class="studio-btn studio-btn--primary">Join session</button>
+    </div>
+  </section>
 
+  <!-- Live session -->
+  <div class="studio-session room-comm" id="studio-session" hidden>
+    <header class="studio-header call-toolbar room-comm" aria-label="Session controls">
+      <div class="studio-header__meta">
+        <h1 class="studio-header__title" id="studio-session-title">Peer coding session</h1>
+        <div class="studio-header__sub">
+          <span class="studio-pill studio-pill--live"><span class="studio-pill__dot"></span> Live</span>
+          <span id="studio-connection-status">Connected</span>
+          <span class="studio-pill studio-pill--debug" id="studio-debug-hint" hidden title="Open browser DevTools Console too">Debug on</span>
+          <span id="studio-participant-count">1 participant</span>
+          <span id="studio-session-timer">00:00</span>
+        </div>
+        <p class="studio-troubleshoot" id="studio-troubleshoot" role="status">Loading session…</p>
+      </div>
+      <div class="studio-header__controls">
+        <button type="button" class="studio-icon-btn studio-icon-btn--labeled" id="toggle-video" title="Camera">
+          <i class="fas fa-video"></i><span class="studio-icon-btn__label video-label">Video</span>
+        </button>
+        <button type="button" class="studio-icon-btn studio-icon-btn--labeled" id="toggle-mute" title="Microphone">
+          <i class="fas fa-microphone"></i><span class="studio-icon-btn__label mic-label">Mute</span>
+        </button>
+        <button type="button" class="studio-icon-btn studio-icon-btn--labeled" id="share-screen" title="Share screen">
+          <i class="fas fa-desktop"></i><span class="studio-icon-btn__label">Share</span>
+        </button>
+        <button type="button" class="studio-icon-btn studio-icon-btn--labeled studio-icon-btn--record" id="record" title="Record locally">
+          <i class="fas fa-circle record-icon"></i><span class="studio-icon-btn__label record-label">Rec</span>
+        </button>
+        <div class="studio-icon-btn-wrap">
+          <button type="button" class="studio-icon-btn studio-icon-btn--labeled" id="toggle-chat-pane" title="Chat">
+            <i class="fas fa-comment"></i><span class="studio-icon-btn__label">Chat</span>
+          </button>
+          <span class="studio-badge" id="new-chat-notification" hidden>New</span>
+        </div>
+        <!-- Compact recording indicator (hidden until recording starts) -->
+        <div id="rec-indicator" class="rec-indicator" hidden aria-label="Recording in progress">
+          <span class="rec-indicator__dot"></span>
+          <span class="rec-indicator__label">REC</span>
+          <span class="rec-indicator__timer" id="rec-timer">00:00</span>
+          <div class="rec-indicator__sep"></div>
+          <button class="rec-indicator__stop" id="rec-stop-btn" title="Stop recording">Stop</button>
+        </div>
+
+        <button type="button" class="studio-icon-btn studio-icon-btn--leave" id="leave-call" title="Leave session">
+          <i class="fas fa-phone-slash"></i> Leave
+        </button>
+      </div>
+    </header>
+
+    <div class="studio-body">
+      <main class="studio-workspace" id="main-section">
+        <div class="studio-workspace__inner">
+          <aside class="studio-explorer" aria-label="Files">
+            <div class="studio-explorer__head">
+              Explorer
+              <button class="studio-explorer__add" id="add-file-btn" title="New file">+</button>
+            </div>
+            <div id="studio-files-list"></div>
+          </aside>
+
+          <div class="studio-editor-col">
+            <div class="studio-editor-bar">
+              <div class="studio-editor-bar__tabs" id="editor-tabs">
+                <!-- tabs injected by code-collab.js -->
+              </div>
+              <div class="studio-editor-bar__actions">
+                <select id="code-language" class="studio-select" aria-label="Language">
+                  <option value="javascript" selected>JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="html">HTML</option>
+                  <option value="css">CSS</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                </select>
+                <button type="button" class="studio-btn studio-btn--sm studio-btn--run" id="run-code-btn">
+                  <i class="fa fa-play"></i> Run
+                </button>
+                <button type="button" class="studio-btn studio-btn--sm studio-btn--theme-toggle" id="toggle-editor-theme" title="Switch to light mode" aria-label="Toggle editor theme">
+                  <i class="fas fa-sun"></i>
+                </button>
+                <span class="studio-sync-status" id="code-collab-status">Syncing…</span>
+              </div>
+            </div>
+
+            <div id="peer-code-pane" class="studio-editor-pane">
+              <textarea id="peer-code-editor" aria-label="Collaborative code editor"></textarea>
+            </div>
+
+            <div class="studio-terminal">
+              <div class="studio-terminal__head">
+                <span>Output <span id="terminal-runner-label" style="font-weight:400;opacity:.6"></span></span>
+                <button type="button" class="studio-btn studio-btn--sm" id="clear-terminal-btn">Clear</button>
+              </div>
+              <pre class="studio-terminal__output" id="studio-terminal-output">Ready. Click Run to execute JavaScript.</pre>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="studio-panel" id="collab-panel" aria-label="Collaboration">
+        <div class="studio-panel__resizer" id="panel-resizer" title="Resize panel"></div>
+        <nav class="studio-panel__tabs" role="tablist">
+          <button type="button" class="studio-panel__tab studio-panel__tab--active" data-studio-tab="people" role="tab">People</button>
+          <button type="button" class="studio-panel__tab" data-studio-tab="chat" role="tab">Chat</button>
+          <button type="button" class="studio-panel__tab" data-studio-tab="activity" role="tab">Activity</button>
+        </nav>
+
+        <div class="studio-panel__body">
+          <div class="studio-panel__pane studio-panel__pane--active" data-studio-pane="people" id="people-pane">
+            <div class="studio-people-list" id="studio-people-list"></div>
+            <p class="studio-people-empty" id="studio-video-hint">Partner video appears here when they join.</p>
+            <div id="videos" class="studio-video-grid"></div>
+          </div>
+
+          <div class="studio-panel__pane" data-studio-pane="chat" id="chat-pane">
+            <div id="chat-messages" class="studio-chat-feed"></div>
+            <form class="studio-chat-compose" onsubmit="return false;">
+              <textarea id="chat-input" class="studio-chat-input" rows="2" placeholder="Message the room…"></textarea>
+              <button type="button" class="studio-chat-send" id="chat-input-btn" aria-label="Send">
+                <i class="fa fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+
+          <div class="studio-panel__pane" data-studio-pane="activity" id="activity-pane">
+            <div class="studio-activity" id="studio-activity-feed"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="studio-pip" id="studio-pip" title="Picture-in-picture">
+      <video class="mirror-mode" id="local" autoplay muted playsinline webkit-playsinline></video>
+      <div class="studio-pip__overlay" id="studio-pip-overlay">
+        <i class="studio-pip__overlay-icon fas fa-video-slash" id="studio-pip-icon"></i>
+        <p class="studio-pip__overlay-msg" id="studio-pip-msg">Allow camera to see yourself</p>
+        <button type="button" class="studio-pip__overlay-btn" id="enable-camera-btn">Enable camera</button>
+      </div>
+      <span class="studio-pip__label" id="studio-pip-label">You</span>
+    </div>
+  </div>
 
 </div>
 
-<script src='/socket.io/socket.io.js'></script>
-<script type="module" src='/js/rtc.js'></script>
-<script type="module" src='/js/events.js'></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+<script src="/js/vendor/simplepeer.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/7.3.0/adapter.min.js" integrity="sha256-2qQheewaqnZlXJ3RJRghVUwD/3fD9HNqxh4C+zvgmF4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js'></script>
-<script src='https://cdn.rawgit.com/yahoo/xss-filters/master/dist/xss-filters.js'></script>
-<script src='/js/autolink.js'></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/yahoo/xss-filters@master/dist/xss-filters.min.js"></script>
+<script src="/js/autolink.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script type="module" src="/js/peer-studio.js?v=<%= assetVersion %>"></script>
+<script type="module" src="/js/rtc.js?v=<%= assetVersion %>"></script>
+<script type="module" src="/js/events.js?v=<%= assetVersion %>"></script>
+
+<script>
+/* ── Editor theme toggle (dark / light) ─────────────────────────────────── */
+(function () {
+  var DARK  = 'dracula';
+  var LIGHT = 'eclipse';
+  var STORAGE_KEY = 'editor-theme';
+  var current = localStorage.getItem( STORAGE_KEY ) || DARK;
+
+  function applyTheme( theme ) {
+    current = theme;
+    localStorage.setItem( STORAGE_KEY, theme );
+
+    var isLight = theme === LIGHT;
+    var workspace = document.getElementById( 'studio-session' );
+    if ( workspace ) workspace.setAttribute( 'data-editor-theme', isLight ? 'light' : 'dark' );
+
+    /* Tell CodeMirror (if already initialised) to swap theme */
+    if ( window.__setEditorTheme ) window.__setEditorTheme( theme );
+
+    /* Update button icon + tooltip */
+    var btn  = document.getElementById( 'toggle-editor-theme' );
+    var icon = btn && btn.querySelector( 'i' );
+    if ( btn )  btn.title = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+    if ( icon ) icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+  }
+
+  /* Apply on load so the theme is set before the editor renders */
+  applyTheme( current );
+
+  document.addEventListener( 'DOMContentLoaded', function () {
+    applyTheme( current ); /* re-apply now that DOM is fully available */
+    var btn = document.getElementById( 'toggle-editor-theme' );
+    if ( btn ) {
+      btn.addEventListener( 'click', function () {
+        applyTheme( current === DARK ? LIGHT : DARK );
+      } );
+    }
+  } );
+
+  /* Public: called by code-collab.js when editor becomes ready */
+  window.__applyEditorTheme = applyTheme;
+  window.__getEditorTheme   = function () { return current; };
+} )();
+</script>
+<script>
+  setTimeout(function () {
+    if (!window.__rtcLoaded) {
+      var el = document.getElementById('studio-troubleshoot') || document.body;
+      var msg = 'Room scripts did not load. Open DevTools → Console for errors (e.g. blocked module or 404 on /js/rtc.js).';
+      if (el.id === 'studio-troubleshoot') el.textContent = msg;
+      else el.insertAdjacentHTML('beforeend', '<p style="color:#f85149;padding:1rem">' + msg + '</p>');
+    }
+  }, 4000);
+</script>

@@ -1,6 +1,7 @@
 const Like = require("../models/likes");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
+const { wantsJson } = require("../utils/api");
 
 module.exports.toggleLike = async function (req, res) {
   try {
@@ -13,7 +14,13 @@ module.exports.toggleLike = async function (req, res) {
       likeable = await Comment.findById(req.query.id);
     }
 
-    // check if a like exist
+    if (!likeable) {
+      if (wantsJson(req)) {
+        return res.status(404).json({ success: false, message: "Not found" });
+      }
+      req.flash("error", "Not found");
+      return res.redirect("back");
+    }
 
     let existingLike = await Like.findOne({
       user: req.user._id,
@@ -21,12 +28,10 @@ module.exports.toggleLike = async function (req, res) {
       onModel: req.query.type,
     });
 
-    // if a like already exists
     if (existingLike) {
       likeable.likes.pull(existingLike._id);
-      likeable.save();
-
-      existingLike.remove();
+      await likeable.save();
+      await existingLike.remove();
       deleted = true;
     } else {
       let newLike = await Like.create({
@@ -35,22 +40,29 @@ module.exports.toggleLike = async function (req, res) {
         onModel: req.query.type,
       });
       likeable.likes.push(newLike._id);
-      likeable.save();
+      await likeable.save();
     }
 
-    if(deleted==false)
-    {
-        req.flash("success", "Successfully liked!");
+    const message = deleted ? "Successfully unliked!" : "Successfully liked!";
+
+    const refreshed = await likeable.constructor.findById(likeable._id).select("likes");
+
+    if (wantsJson(req)) {
+      return res.json({
+        success: true,
+        message,
+        likesCount: refreshed ? refreshed.likes.length : likeable.likes.length,
+        liked: !deleted,
+      });
     }
-    else
-    {
-        req.flash("success", "Successfully unliked!");
-    }
+
+    req.flash("success", message);
     return res.redirect("back");
-   
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
+    if (wantsJson(req)) {
+      return res.status(500).json({ success: false, message: err.message });
+    }
     req.flash("error", err.message);
     return res.redirect("back");
   }

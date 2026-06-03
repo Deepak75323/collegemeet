@@ -1,25 +1,190 @@
+<style>
+/* ── Thank-you page — premium dark theme ─────────────────────────────────── */
+body.contact-layout-body { background: #070B14 !important; margin: 0; }
 
+.ty-page {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
 
-<container class="thankyou">
-    <row>
-      <columns small="12" >
-        
-        <table class="one-column" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-spacing:0; border-left:1px solid #e8e7e5; border-right:1px solid #e8e7e5; border-bottom:1px solid #e8e7e5; padding: 10px" bg="#FFFFFF">
-          
-          <div width="350" height="150" align="center" style="border-radius: 50%;">
-            <img src="http://www.pickmaid.com/dubai/assets/images/success-icon.png" width="60" height="60" style="padding-top:5px" alt="" border="0"/>
-          </div>
+/* Background glows */
+.ty-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+.ty-glow--1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+  top: -150px; left: -100px;
+}
+.ty-glow--2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+}
 
-          <tr>
-            <td align="center" style="padding:0px 40px 40px 40px"><p style="color:#fff; font-size:32px; text-align:center; font-family: Verdana, Geneva, sans-serif">Hello! <br> <%= name %></p>
-                <b style="color:#fff; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px ">
-                    Thanks a bunch for filling that out form </b><br/>
-                    It means a lot to us, just like you do! We really appreciate you giving us a moment of your time today. Thanks for being you.</br>
-                
-                <br />
-            </p></td>
-          </tr>
-        </table>
-      </columns>
-    </row>
-</container>
+.ty-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 22px;
+  padding: 56px 44px 48px;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+  animation: ty-fadein 0.65s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Top accent line */
+.ty-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.6), rgba(236,72,153,0.5), transparent);
+  border-radius: 999px;
+}
+
+@keyframes ty-fadein {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.ty-check {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.12);
+  border: 2px solid rgba(34,197,94,0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  color: #4ade80;
+  margin-bottom: 24px;
+  animation: ty-pop 0.5s 0.2s cubic-bezier(.22,1,.36,1) both;
+  box-shadow: 0 0 30px rgba(34,197,94,0.15);
+}
+@keyframes ty-pop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.ty-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+  background: linear-gradient(135deg, #fff 30%, #CBD5E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ty-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #6366F1, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 14px;
+}
+
+.ty-body {
+  font-size: 0.875rem;
+  color: #94A3B8;
+  line-height: 1.7;
+  margin: 0 0 32px;
+}
+
+/* Info chips */
+.ty-chips {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.ty-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.75rem;
+  color: #94A3B8;
+}
+.ty-chip i { font-size: 0.8rem; color: #818cf8; }
+
+.ty-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 30px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.ty-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #818CF8, #A78BFA, #F472B6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.ty-back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(99,102,241,0.4);
+  color: #fff;
+  text-decoration: none;
+}
+.ty-back:hover::after { opacity: 1; }
+.ty-back span, .ty-back i { position: relative; z-index: 1; }
+</style>
+
+<div class="ty-page">
+  <div class="ty-glow ty-glow--1"></div>
+  <div class="ty-glow ty-glow--2"></div>
+
+  <div class="ty-card">
+    <div class="ty-check">✓</div>
+    <h1 class="ty-title">Message Sent!</h1>
+    <p class="ty-name">Hello, <%= name %> 👋</p>
+    <p class="ty-body">
+      Thanks for reaching out — your message has been received.<br>
+      I'll get back to you as soon as possible, usually within 24 hours.
+    </p>
+
+    <div class="ty-chips">
+      <span class="ty-chip"><i class="fas fa-clock"></i> Reply within 24h</span>
+      <span class="ty-chip"><i class="fas fa-shield-alt"></i> Private & Secure</span>
+    </div>
+
+    <a href="/" class="ty-back">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Home</span>
+    </a>
+  </div>
+</div>

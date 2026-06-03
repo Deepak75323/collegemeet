@@ -7,11 +7,13 @@
 
             <div>
                 <h1 class="footer__title">
-                <%= user.username %>
+                <%= user.username || (user.name && user.name !== 'none' ? user.name : user.email) %>
                 </h1>
+                <% if (user.expertise && user.expertise !== 'none') { %>
                 <span class="footer__subtitle">
                 <%= user.expertise %>
                 </span>
+                <% } %>
             </div>
 
             <%}%>

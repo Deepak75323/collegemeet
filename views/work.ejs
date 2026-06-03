@@ -1,172 +1,196 @@
-<section class="work section">
-  <h2 data-heading="Information" class="section__title">Recent Notices</h2>
-  
-  <div class="work__filters" id="work-link">
-    <span class="work__item active-work" data-filter="all">All</span>
-    <span class="work__item" data-filter=".web">Web</span>
-    <span class="work__item" data-filter=".app">App</span>
-    <span class="work__item" data-filter=".design">Design</span>
+<%
+function displayName(u) {
+  if (!u) return 'Member';
+  return u.username || u.email || 'Member';
+}
+function truncate(str, len) {
+  if (!str) return '';
+  return str.length > len ? str.slice(0, len) + '…' : str;
+}
+function skillTags(expertise) {
+  if (!expertise || expertise === 'none') return [];
+  return expertise.split(',').map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 4);
+}
+var catClass = function (c) {
+  if (!c) return 'general';
+  var lower = String(c).toLowerCase();
+  if (['web', 'app', 'design'].indexOf(lower) >= 0) return lower;
+  return 'web';
+};
+%>
+
+<nav class="cm-page-nav" aria-label="Notice page navigation">
+  <a href="/" class="cm-page-nav__btn">
+    <i class="fas fa-home" aria-hidden="true"></i>
+    <span>Home</span>
+  </a>
+  <button type="button" class="cm-page-nav__btn" id="cm-go-back" aria-label="Go back">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    <span>Back</span>
+  </button>
+</nav>
+
+<section class="cm-page work-premium" id="notices">
+
+  <header class="cm-page-header cm-reveal">
+    <span class="cm-page-header__eyebrow"><i class="fas fa-bullhorn"></i> Community</span>
+    <h1 class="cm-page-header__title">Notices & Updates</h1>
+    <p class="cm-page-header__sub">Discover announcements, project updates, and connect with students on campus.</p>
+  </header>
+
+  <% if (locals.user) { %>
+  <div class="notice-create cm-reveal" id="create-notice">
+    <div class="notice-create__header">
+      <h2 class="notice-create__title">Create Notice</h2>
+      <p class="notice-create__sub">Create announcements and updates for your community.</p>
+    </div>
+
+    <form id="create-post-form" action="/posts/create" method="POST" enctype="multipart/form-data" data-user-id="<%= user.id %>" novalidate>
+      <div class="notice-create__grid">
+        <div class="cm-field" data-type="input">
+          <input type="text" name="title" id="notice-title" required autocomplete="off">
+          <label for="notice-title">Title</label>
+          <span class="cm-field__err">Enter a title (2+ characters).</span>
+        </div>
+        <div class="cm-field" data-type="input">
+          <input type="text" name="category" id="notice-category" required autocomplete="off" placeholder="">
+          <label for="notice-category">Category</label>
+          <span class="cm-field__err">Enter a category (e.g. web, app, design).</span>
+        </div>
+      </div>
+
+      <div class="cm-field cm-field--area" data-type="textarea">
+        <textarea name="description" id="notice-description" required></textarea>
+        <label for="notice-description">Description</label>
+        <span class="cm-field__err">Add a description (10+ characters).</span>
+      </div>
+
+      <div class="cm-dropzone" id="notice-dropzone">
+        <input class="blog_image" name="blog_image" type="file" id="notice-image" accept="image/*">
+        <div class="cm-dropzone__icon"><i class="fas fa-cloud-upload-alt"></i></div>
+        <p class="cm-dropzone__text"><strong>Drag & drop</strong> an image here, or click to browse</p>
+        <p class="cm-dropzone__text" style="font-size:0.75rem;margin-top:4px;">PNG, JPG up to 10MB</p>
+        <div class="cm-dropzone__preview" id="notice-preview"></div>
+      </div>
+
+      <button type="submit" class="cm-btn-primary" id="notice-submit">
+        <span class="cm-btn-primary__label">Publish Notice</span>
+        <span class="cm-btn-primary__spinner"></span>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </form>
+  </div>
+  <% } %>
+
+  <div class="notice-filters" id="work-link">
+    <span class="notice-filter__btn work__item active-work" data-filter="all">All</span>
+    <span class="notice-filter__btn work__item" data-filter=".web">Web</span>
+    <span class="notice-filter__btn work__item" data-filter=".app">App</span>
+    <span class="notice-filter__btn work__item" data-filter=".design">Design</span>
   </div>
 
+  <div class="notice-grid work__container" id="posts-grid">
+    <% for (var i = 0; i < posts.length; i++) {
+      var post = posts[i];
+      var mixCat = catClass(post.category);
+      var author = displayName(post.user);
+      var imgSrc = post.blog_image || '/images/work-1.webp';
+      var likeCount = post.likes ? post.likes.length : 0;
+      var commentCount = post.comments ? post.comments.length : 0;
+    %>
+    <article class="notice-card work__card mix <%= mixCat %>" data-post-id="<%= post.id %>">
+      <% if (locals.user && locals.user.id == post.user.id) { %>
+        <button type="button" class="notice-card__delete post-delete-btn work__edit" data-post-id="<%= post.id %>" title="Delete notice" aria-label="Delete">
+          <i class="uil uil-trash-alt"></i>
+        </button>
+      <% } %>
 
-<div class="work__container container grid">
+      <a href="/posts/<%= post.id %>" class="notice-card__media">
+        <img src="<%= imgSrc %>" alt="<%= post.title %>" class="notice-card__img work__img">
+        <span class="notice-card__badge"><%= post.category || 'General' %></span>
+        <span class="notice-card__overlay">View Details →</span>
+      </a>
 
- <%for(post of posts)
-    {%>
-      <div class="work__card mix <%= post.category %>">
-        <% if(locals.user && locals.user.id==post.user.id)
-        {
-          %>
-          <a href="/posts/destroy/<%=post.id%>" class="work__edit">
-            <i class="uil uil-trash-alt"></i>
-          </a>
-          <%
-        }%>
+      <div class="notice-card__body">
+        <h3 class="notice-card__title"><%= post.title %></h3>
+        <p class="notice-card__desc"><%= truncate(post.description, 140) %></p>
 
-        <img src="<%= post.blog_image%>" alt="" class="work__img">
-      <h3 class="work__title"><%=post.category%> design</h3>
-      <% if (locals.user){ %>
-        <a class="toggle-like-button" href="/likes/toggle/?id=<%=post._id%>&type=Post">
-           <h5><%= post.likes.length %> Likes</h5>
-           <!-- <div class="heart-btn">
-            <div class="content">
-              <span class="heart"></span>
-              <span class="text">Like</span>
-              <span class="numb"></span>
-            </div>
-          </div> -->
-        </a>
-    <% }else{ %>
-       <h5> <%= post.likes.length %> Likes</h5>
-
-       <!-- <div class="heart-btn">
-        <div class="content">
-          <span class="heart"></span>
-          <span class="text">Like</span>
-          <span class="numb"></span>
+        <div class="notice-card__meta">
+          <% if (locals.user) { %>
+            <a class="toggle-like-button" href="/likes/toggle/?id=<%= post._id %>&type=Post" data-id="<%= post._id %>" data-type="Post">
+              <span><i class="fas fa-heart"></i> <%= likeCount %> Likes</span>
+            </a>
+          <% } else { %>
+            <span><i class="fas fa-heart"></i> <%= likeCount %> Likes</span>
+          <% } %>
+          <span><i class="fas fa-comment"></i> <%= commentCount %> Comments</span>
         </div>
-      </div> -->
+
+        <div class="notice-card__footer">
+          <div class="notice-card__author">
+            <% if (post.user && post.user.avatar) { %>
+              <img src="<%= post.user.avatar %>" alt="" class="notice-card__avatar">
+            <% } else { %>
+              <img src="/images/avatar7.png" alt="" class="notice-card__avatar">
+            <% } %>
+            <a href="/posts/<%= post.id %>" class="notice-card__author-name"><%= author %></a>
+          </div>
+          <a href="/posts/<%= post.id %>" class="notice-card__cta">View Details <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <!-- Legacy nodes for mixitup / old CSS (hidden) -->
+      <h3 class="work__title" hidden><%= post.category %> design</h3>
+      <span class="work__button" hidden></span>
+      <div class="portfolio__item-details" hidden></div>
+    </article>
     <% } %>
-
-      <span class="work__button">
-       <% if(post.user.username)
-       {%>
-        <a href="/posts/<%=post.id%>"><%= post.user.username %></a>
-       <%}
-       else if(post.user.email){%>
-       <a href="/posts/<%=post.id%>"><%= post.user.email %></a>
-
-         <%}%>
-        <i class="uil uil-arrow-right work__button-icon"></i>
-      </span>
-        <div class="portfolio__item-details">
-          <h3 class="details__title"><%=post.title%></h3>
-          <p class="details__description"><%=post.description%></p>
-       
-          <ul class="details__info">
-            <li>created -<span><%= post.created_At %></span></li>
-            <li>technologies -<span>html css</span></li>
-            <li>role -<span>4 dec 2020</span></li>
-            <li>view-<span><a href="#">www.domain.com</a></span>
-          </ul>
-        </div>
-
-    </div>
-    <%}%>
-
-
-</div>
-
-
-<% if(locals.user){%>
-
-
-
-<div class="new_blog">
-  <h3 class="Adding_blog">Add Notice</h3>
-  
-  <form action="/posts/create" method="POST" enctype="multipart/form-data">
-    <h2 style="margin:3px;">Enter Your Title</h2>
-    <input type="text" name="title" style="width:500px;padding:4px;" placeholder="Title" class="blog_title">
-    <h2 style="margin:3px;">Enter Your Categoty</h2>
-    <input type="text" name="category" style="width:500px;padding:4px;" placeholder="categoty" class="blog_category">
-    <h2 style="margin:5px;">Enter Your Description</h2>
-    <textarea type="text" name="description" rows="4" cols="50" style="width:500px;padding:5px;" placeholder="Description" class="blog_description">
-    </textarea>
-    <label class="uploading_part" for="pic">
-      <span>Click to upload image</span>
-      <input class="blog_image" name="blog_image" type="file" id="pic">
-    </label>
-    <div>
-    <input type="submit" class="blog_upload" name="submit" style="width:500px;padding:4px;margin:10px;" value="Upload" class="blog_submit">
-    </div>
-
-</div>
-
-
-
-<%}%>
-
-
-<h2 class="all_users"> Students </h2> 
-
-
-
-
-  <div class="work__container container grid">
-
-  <%for(user of all_users)
-    {%>
-      <div class="work__card mix <%= user.category %>">
-  
-      <%  if(user.avatar)
-        {%>
-
-          <img src="<%= user.avatar%>" alt="" class="work__img">
-
-       <% }
-       else
-       {%>
-        <img src="/images/avatar7.png" alt="" class="work__img">
-      
-        <% }%>
-    
-    
-    
-
-      <span class="work__button">
-       <% if(user.username )
-       {%>
-        <a href="/about/<%=user.id%>"><%= user.username %></a>
-       <%}
-       else if(user.email){%>
-       <a href="/about/<%=user.id%>"><%= user.email %></a>
-
-         <%}%>
-        <i class="uil uil-arrow-right work__button-icon"></i>
-      </span>
-        <div class="portfolio__item-details">
-          
-        
-       
-          <ul class="details__info">
-            
-            <li>view-<span><a href="/about/<%=user.id%>"><%= user.username %></a></span>
-          </ul>
-        </div>
-
-    </div>
-    <%}%>
-
-
   </div>
-  
-  
 
+  <section class="students-section" id="students">
+    <header class="cm-page-header" style="margin-bottom:32px;">
+      <span class="cm-page-header__eyebrow"><i class="fas fa-users"></i> Directory</span>
+      <h2 class="cm-page-header__title" style="font-size:2rem;">Students</h2>
+      <p class="cm-page-header__sub">Explore profiles, skills, and connect with peers in the community.</p>
+    </header>
 
+    <div class="students-grid">
+      <% for (var j = 0; j < all_users.length; j++) {
+        var u = all_users[j];
+        var uName = displayName(u);
+        var uAvatar = u.avatar ? u.avatar : '/images/avatar7.png';
+        var tags = skillTags(u.expertise);
+        var roleLabel = (u.describe && u.describe !== 'none') ? truncate(u.describe, 48) : 'Software Engineer';
+        var expYears = u.experience ? u.experience : 0;
+      %>
+      <article class="student-card cm-reveal">
+        <div class="student-card__avatar-wrap">
+          <img src="<%= uAvatar %>" alt="<%= uName %>" class="student-card__avatar work__img">
+        </div>
+        <h3 class="student-card__name"><%= uName %></h3>
+        <p class="student-card__role"><%= roleLabel %></p>
 
+        <% if (tags.length) { %>
+        <div class="student-card__tags">
+          <% tags.forEach(function (tag) { %>
+            <span class="student-card__tag"><%= tag %></span>
+          <% }); %>
+        </div>
+        <% } %>
+
+        <div class="student-card__stats">
+          <div><strong><%= expYears %></strong> Yrs exp</div>
+          <div><strong><%= u.project && u.project !== 'none' ? '✓' : '—' %></strong> Projects</div>
+        </div>
+
+        <a href="/about/<%= u.id %>" class="student-card__link work__button">
+          View Profile <i class="fas fa-arrow-right"></i>
+        </a>
+        <span class="work__button" hidden></span>
+        <div class="portfolio__item-details" hidden></div>
+      </article>
+      <% } %>
+    </div>
+  </section>
 
 </section>
-
-
-

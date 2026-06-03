@@ -1,27 +1,20 @@
-const nodeMailer= require('../config/nodemailer');
+const nodeMailer = require("../config/nodemailer");
+const env = require("../config/environment");
 
+exports.newComment = async function (comment) {
+  try {
+    let htmlString = await nodeMailer.renderTemplate(
+      { comment: comment },
+      "/comments/new_comment.ejs"
+    );
 
-// this is another way of exporting
-exports.newComment=(comment)=>
-{
-    
-    let htmlString=nodeMailer.renderTemplate({comment:comment},"/comments/new_comment.ejs"); 
-
-    nodeMailer.transporter.sendMail({
-        from:'vevekdivcoder1@gmail.com',
-        to:comment.user.email,
-        subject:'New Comment',
-        html:htmlString
-    },(err,info)=>
-    {
-        if(err)
-        {
-            console.log('error in sending mail:',err); 
-            return;
-        }
-        // console.log('mail sent',info);
-        return;
-    
-
+    await nodeMailer.transporter.sendMail({
+      from: env.smtp.auth.user,
+      to: comment.user.email,
+      subject: "New Comment",
+      html: htmlString,
     });
-}   
+  } catch (err) {
+    console.log("error in sending mail:", err);
+  }
+};

@@ -1,73 +1,99 @@
- <div class="wrapper">
-    <div class="title-text">
-       <div class="title login">
-          Login Form
-       </div>
-       <div class="title signup">
-          Signup Form
-       </div>
-    </div>
-    <div class="form-container">
-       <div class="slide-controls">
-          <input type="radio" name="slide" id="login" checked>
-          <input type="radio" name="slide" id="signup">
-          <label for="login" class="slide login">Login</label>
-          <label for="signup" class="slide signup">Signup</label>
-          <div class="slider-tab"></div>
-       </div>
-       <div class="form-inner">
-          <form action="/createsession" method="post" class="login">
-             <div class="field">
-                <input type="text" placeholder="Username" name="username" required>
-             </div>
-             <div class="field">
-                <input type="password" placeholder="Password" name="password" required>
-             </div>
-             <div class="pass-link">
-                <a href="#">Forgot password?</a>
-             </div>
-             <div class="field btn">
-                <div class="btn-layer"></div>
-                <input type="submit" name="submit" value="Login">
-             </div>
-             <div class="signup-link">
-                Not a member? <a href="">Signup now</a>
-             </div>
-          </form>
-          <form action="/create" method="post" class="signup">
-             <div class="field">
-                <input type="text" placeholder="Email Address" name="email"required>
-             </div>
-             <div class="field">
-                <input type="text" placeholder="username" name="username"required>
-             </div>
-             <div class="field">
-                <input type="password" placeholder="Password" name="password" required>
-             </div>
-             <div class="field">
-                <input type="password" placeholder="Confirm password" name="confirm_password" required>
-             </div>
-             <div class="field btn">
-                <div class="btn-layer"></div>
-                <input type="submit" name="submit" value="Signup">
-             </div>
-            </form>
-         </div>
-         <div class='g-sign-in-button'>
-           <div class=content-wrapper>
-              <a href="/users/auth/google">
-     
-                 <div class='logo-wrapper'>
-                    <img src='https://developers.google.com/identity/images/g-logo.png'>
-                </div>
-                <span class='text-container'>
-              <span>Sign in with Google</span>
-            </span>
-     
-              </a>
-           </div>
-       </div>
-    </div>
+<%
+  var isSignup = (typeof title !== 'undefined' && title === 'Sign Up');
+%>
 
- 
- </div>
+<div class="auth-page">
+  <aside class="auth-brand">
+    <div class="auth-brand__glow auth-brand__glow--1"></div>
+    <div class="auth-brand__glow auth-brand__glow--2"></div>
+    <a href="/" class="auth-brand__logo">Collegemeet</a>
+    <h1 class="auth-brand__title">Build together.<br>Ship faster.</h1>
+    <p class="auth-brand__text">
+      Join your campus community — video calls, collaborative coding, notices, and real-time chat in one place.
+    </p>
+    <ul class="auth-brand__features">
+      <li><i class="fas fa-check-circle"></i> Peer video & code studio</li>
+      <li><i class="fas fa-check-circle"></i> Community notices & profiles</li>
+      <li><i class="fas fa-check-circle"></i> Secure authentication</li>
+    </ul>
+  </aside>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-tabs slide-controls">
+        <input type="radio" name="slide" id="login" <%= isSignup ? '' : 'checked' %>>
+        <input type="radio" name="slide" id="signup" <%= isSignup ? 'checked' : '' %>>
+        <label for="login" class="slide login">Log in</label>
+        <label for="signup" class="slide signup">Sign up</label>
+      </div>
+
+      <div class="form-inner auth-form-inner">
+        <form action="/createsession" method="post" class="login <%= isSignup ? '' : 'active' %>">
+          <div class="auth-field" data-type="input">
+            <input type="text" name="username" id="auth-login-user" required autocomplete="username">
+            <label for="auth-login-user">Username</label>
+          </div>
+          <div class="auth-field" data-type="password">
+            <input type="password" name="password" id="auth-login-pass" required autocomplete="current-password">
+            <label for="auth-login-pass">Password</label>
+            <button type="button" class="auth-field__toggle" data-target="auth-login-pass" aria-label="Toggle password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-options">
+            <label class="auth-remember">
+              <input type="checkbox" name="remember"> Remember me
+            </label>
+            <a href="#" style="color:#94A3B8;font-size:0.8125rem;">Forgot password?</a>
+          </div>
+          <button type="submit" class="auth-submit">Log in</button>
+          <p style="text-align:center;margin-top:16px;font-size:0.8125rem;color:#94A3B8;">
+            Not a member? <a href="/signup" style="color:#818cf8;">Sign up</a>
+          </p>
+        </form>
+
+        <form action="/create" method="post" class="signup <%= isSignup ? 'active' : '' %>">
+          <div class="auth-field" data-type="input">
+            <input type="email" name="email" id="auth-signup-email" required autocomplete="email">
+            <label for="auth-signup-email">Email address</label>
+          </div>
+          <div class="auth-field" data-type="input">
+            <input type="text" name="username" id="auth-signup-user" required autocomplete="username">
+            <label for="auth-signup-user">Username</label>
+          </div>
+          <div class="auth-field" data-type="password">
+            <input type="password" name="password" id="auth-signup-pass" required autocomplete="new-password">
+            <label for="auth-signup-pass">Password</label>
+            <button type="button" class="auth-field__toggle" data-target="auth-signup-pass" aria-label="Toggle password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="auth-field" data-type="password">
+            <input type="password" name="confirm_password" id="auth-signup-confirm" required autocomplete="new-password">
+            <label for="auth-signup-confirm">Confirm password</label>
+            <button type="button" class="auth-field__toggle" data-target="auth-signup-confirm" aria-label="Toggle password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <button type="submit" class="auth-submit">Create account</button>
+          <p style="text-align:center;margin-top:16px;font-size:0.8125rem;color:#94A3B8;">
+            Already have an account? <a href="/signin" style="color:#818cf8;">Log in</a>
+          </p>
+        </form>
+      </div>
+
+      <div class="auth-divider">or continue with</div>
+
+      <div class="g-sign-in-button">
+        <div class="content-wrapper">
+          <a href="/users/auth/google">
+            <div class="logo-wrapper">
+              <img src="https://developers.google.com/identity/images/g-logo.png" alt="">
+            </div>
+            <span class="text-container"><span>Sign in with Google</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

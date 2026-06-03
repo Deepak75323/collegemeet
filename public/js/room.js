@@ -86,10 +86,18 @@ function outputUsers(users) {
 }
 
 //Prompt the user before leave chat room
-document.getElementById('leave-btn').addEventListener('click', () => {
-  const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
+document.getElementById('leave-btn').addEventListener('click', async () => {
+  const dlg = window.cmDialog;
+  const leaveRoom = dlg
+    ? await dlg.confirm({
+        title: 'Leave chatroom?',
+        message: 'Are you sure you want to leave this chatroom?',
+        confirmLabel: 'Leave',
+        cancelLabel: 'Stay',
+        variant: 'warning',
+      })
+    : false;
   if (leaveRoom) {
     window.location = '/privateroom';
-  } else {
   }
 });

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= typeof title !== 'undefined' ? title + ' | Collegemeet' : 'Collegemeet' %></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js"></script>
+    <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/app-premium.css">
+    <link rel="stylesheet" href="/css/dialogs.css">
+    <%- style %>
+</head>
+<body class="auth-layout cm-app">
+    <script src="/js/dialogs-boot.js?v=<%= assetVersion %>"></script>
+    <script type="module" src="/js/dialogs-global.js?v=<%= assetVersion %>"></script>
+    <%- body %>
+    <script>
+        <% if (flash.success && flash.success.length > 0) { %>
+            new Noty({ theme: 'relax', text: <%- JSON.stringify(flash.success[0]) %>, type: 'success', layout: 'topRight', timeout: 1500 }).show();
+        <% } %>
+        <% if (flash.error && flash.error.length > 0) { %>
+            new Noty({ theme: 'relax', text: <%- JSON.stringify(flash.error[0]) %>, type: 'error', layout: 'topRight', timeout: 1500 }).show();
+        <% } %>
+    </script>
+    <script src="/js/app-premium.js"></script>
+    <%- script %>
+</body>
+</html>

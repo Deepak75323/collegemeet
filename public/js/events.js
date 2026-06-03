@@ -1,121 +1,102 @@
 import helpers from './helpers.js';
+import debugLog from './debug-log.js';
+
+const { trace } = debugLog;
 
 window.addEventListener( 'load', () => {
-    //When the chat icon is clicked
-    document.querySelector( '#toggle-chat-pane' ).addEventListener( 'click', ( e ) => {
-        let chatElem = document.querySelector( '#chat-pane' );
-        let mainSecElem = document.querySelector( '#main-section' );
+    trace( 'events', 'load' );
 
-        if ( chatElem.classList.contains( 'chat-opened' ) ) {
-            chatElem.setAttribute( 'hidden', true );
-            mainSecElem.classList.remove( 'col-md-9' );
-            mainSecElem.classList.add( 'col-md-12' );
-            chatElem.classList.remove( 'chat-opened' );
-        }
+    const localVideo = document.getElementById( 'local' );
+    const pip = document.querySelector( '.studio-pip' );
 
-        else {
-            chatElem.attributes.removeNamedItem( 'hidden' );
-            mainSecElem.classList.remove( 'col-md-12' );
-            mainSecElem.classList.add( 'col-md-9' );
-            chatElem.classList.add( 'chat-opened' );
-        }
+    if ( ( pip || localVideo ) && localVideo ) {
+        ( pip || localVideo ).addEventListener( 'click', ( e ) => {
+            // Let the enable-camera button handle its own click
+            if ( e.target.closest( '#enable-camera-btn' ) ) return;
 
-        //remove the 'New' badge on chat icon (if any) once chat is opened.
-        setTimeout( () => {
-            if ( document.querySelector( '#chat-pane' ).classList.contains( 'chat-opened' ) ) {
-                helpers.toggleChatNotificationBadge();
+            // Only attempt PiP when video is actually playing
+            if ( !localVideo.srcObject || localVideo.readyState < 1 ) return;
+
+            trace( 'events', 'pip picture-in-picture toggle' );
+            if ( !document.pictureInPictureElement ) {
+                localVideo.requestPictureInPicture().catch( ( err ) => {
+                    debugLog.warn( 'events', 'PiP failed', { message: err?.message } );
+                } );
+            } else {
+                document.exitPictureInPicture().catch( ( err ) => {
+                    debugLog.warn( 'events', 'exit PiP failed', { message: err?.message } );
+                } );
             }
-        }, 300 );
-    } );
+        } );
+    }
 
+    const createRoomBtn = document.getElementById( 'create-room' );
+    if ( createRoomBtn ) {
+        createRoomBtn.addEventListener( 'click', ( e ) => {
+            e.preventDefault();
+            trace( 'events', 'create-room click' );
 
-    //When the video frame is clicked. This will enable picture-in-picture
-    document.getElementById( 'local' ).addEventListener( 'click', () => {
-        if ( !document.pictureInPictureElement ) {
-            document.getElementById( 'local' ).requestPictureInPicture()
-                .catch( error => {
-                    // Video failed to enter Picture-in-Picture mode.
-                    console.error( error );
-                } );
-        }
+            const roomName = document.querySelector( '#room-name' ).value;
+            const yourName = document.querySelector( '#your-name' ).value;
 
-        else {
-            document.exitPictureInPicture()
-                .catch( error => {
-                    // Video failed to leave Picture-in-Picture mode.
-                    console.error( error );
-                } );
-        }
-    } );
+            if ( roomName && yourName ) {
+                document.querySelector( '#err-msg' ).innerText = '';
+                sessionStorage.setItem( 'username', yourName );
 
+                const roomId = `${ roomName.trim().replace( /\s+/g, '_' ) }_${ helpers.generateRandomString() }`;
+                const roomLink = `${ location.origin }/room/?room=${ encodeURIComponent( roomId ) }`;
 
-    //When the 'Create room" is button is clicked
-    document.getElementById( 'create-room' ).addEventListener( 'click', ( e ) => {
-        e.preventDefault();
+                trace( 'events', 'create-room redirect', { roomId, roomLink } );
 
-        let roomName = document.querySelector( '#room-name' ).value;
-        let yourName = document.querySelector( '#your-name' ).value;
+                document.querySelector( '#room-created' ).innerHTML =
+                    `Opening session… Share this link with your partner: <a href="${ roomLink }">${ roomLink }</a>`;
 
-        if ( roomName && yourName ) {
-            //remove error message, if any
-            document.querySelector('#err-msg').innerText = "";
+                window.location.href = roomLink;
+            } else {
+                trace( 'events', 'create-room validation failed' );
+                document.querySelector( '#err-msg' ).innerText = 'All fields are required';
+            }
+        } );
+    }
 
-            //save the user's name in sessionStorage
-            sessionStorage.setItem( 'username', yourName );
+    const enterRoomBtn = document.getElementById( 'enter-room' );
+    if ( enterRoomBtn ) {
+        enterRoomBtn.addEventListener( 'click', ( e ) => {
+            e.preventDefault();
+            trace( 'events', 'enter-room click' );
 
-            //create room link
-            let roomLink = `${ location.origin }/room/?room=${ roomName.trim().replace( ' ', '_' ) }_${ helpers.generateRandomString() }`;
+            const name = document.querySelector( '#username' ).value;
 
-            //show message with link to room
-            document.querySelector( '#room-created' ).innerHTML = `Room successfully created. Click <a href='${ roomLink }'>here</a> to enter room. 
-                Share the room link with your partners.`;
-
-            //empty the values
-            document.querySelector( '#room-name' ).value = '';
-            document.querySelector( '#your-name' ).value = '';
-        }
-
-        else {
-            document.querySelector('#err-msg').innerText = "All fields are required";
-        }
-    } );
-
-
-    //When the 'Enter room' button is clicked.
-    document.getElementById( 'enter-room' ).addEventListener( 'click', ( e ) => {
-        e.preventDefault();
-
-        let name = document.querySelector( '#username' ).value;
-
-        if ( name ) {
-            //remove error message, if any
-            document.querySelector('#err-msg-username').innerText = "";
-
-            //save the user's name in sessionStorage
-            sessionStorage.setItem( 'username', name );
-
-            //reload room
-            location.reload();
-        }
-
-        else {
-            document.querySelector('#err-msg-username').innerText = "Please input your name";
-        }
-    } );
-
+            if ( name ) {
+                document.querySelector( '#err-msg-username' ).innerText = '';
+                sessionStorage.setItem( 'username', name );
+                trace( 'events', 'enter-room reload', { username: name } );
+                location.reload();
+            } else {
+                trace( 'events', 'enter-room validation failed' );
+                document.querySelector( '#err-msg-username' ).innerText = 'Please enter your name';
+            }
+        } );
+    }
 
     document.addEventListener( 'click', ( e ) => {
-        if ( e.target && e.target.classList.contains( 'expand-remote-video' ) ) {
-            helpers.maximiseStream( e );
-        }
+        const expandBtn = e.target.closest( '.expand-remote-video' );
+        const muteBtn = e.target.closest( '.mute-remote-mic' );
 
-        else if ( e.target && e.target.classList.contains( 'mute-remote-mic' ) ) {
-            helpers.singleStreamToggleMute( e );
+        if ( expandBtn ) {
+            trace( 'events', 'expand remote video' );
+            helpers.toggleRemoteVideoFocus( e );
+        } else if ( muteBtn ) {
+            trace( 'events', 'mute remote video' );
+            helpers.singleStreamToggleMute( { target: muteBtn } );
         }
     } );
 
-
-    document.getElementById( 'closeModal' ).addEventListener( 'click', () => {
-        helpers.toggleModal( 'recording-options-modal', false );
-    } );
+    const closeModalBtn = document.getElementById( 'closeModal' );
+    if ( closeModalBtn ) {
+        closeModalBtn.addEventListener( 'click', () => {
+            trace( 'events', 'close end-call modal' );
+            helpers.toggleModal( 'end-call-modal', false );
+        } );
+    }
 } );

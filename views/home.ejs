@@ -9,7 +9,7 @@
         <div class="home__data">
           <div class="home-content">
             <div class="text-1 text-white">Hello, my name is</div>
-            <div class="text-2 text-white"><%= user.username %></div>
+            <div class="text-2 text-white"><%= user.username || user.email %></div>
             <div class="text-3 text-white">And I'm a <span class="typing"></span></div>
         </div>
           <a href="/about/<%=user.id%>" class="button">
@@ -30,7 +30,7 @@
 
           <div>
               <h3 class="info__title">Leetcode</h3>
-              <span class="info__subtitle"><%= user.leetcode %></span>
+              <span class="info__subtitle"><%= user.leetcode && user.leetcode !== 'none' ? user.leetcode : '—' %></span>
             </div>
           </div>
 
@@ -40,7 +40,7 @@
 
             <div>
               <h3 class="info__title">Codeforces</h3>
-              <span class="info__subtitle"><%= user.codeforces %></span>
+              <span class="info__subtitle"><%= user.codeforces && user.codeforces !== 'none' ? user.codeforces : '—' %></span>
             </div>
           </div>
         </div>

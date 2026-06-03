@@ -1,9 +1,10 @@
 const Comment = require("../models/comment");
 const Post = require("../models/post");
-const Like= require("../models/likes");
+const Like = require("../models/likes");
 const commentsMailer = require("../mailers/comments_mailer");
 const Queue = require("bull");
 const { REDIS_PORT, REDIS_URI } = require("../config/redis_credential");
+const { wantsJson } = require("../utils/api");
 
 const emailQueue = new Queue("emailQueue", {
   redis: {
@@ -12,24 +13,47 @@ const emailQueue = new Queue("emailQueue", {
   },
 });
 
+function formatComment(comment) {
+  const user = comment.user || {};
+  return {
+    id: comment._id,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    likesCount: comment.likes ? comment.likes.length : 0,
+    user: {
+      id: user._id || user.id,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+    },
+  };
+}
+
 module.exports.create = async function (req, res) {
   try {
     let post = await Post.findById(req.body.post);
 
-    if (post) {
-      let comment = await Comment.create({
-        content: req.body.content,
-        user: req.user._id,
-        post: req.body.post,
-      });
-      post.comments.push(comment);
-      post.save();
+    if (!post) {
+      if (wantsJson(req)) {
+        return res.status(404).json({ success: false, message: "Post not found" });
+      }
+      req.flash("error", "Post not found");
+      return res.redirect("back");
+    }
 
+    let comment = await Comment.create({
+      content: req.body.content,
+      user: req.user._id,
+      post: req.body.post,
+    });
+    post.comments.push(comment);
+    await post.save();
 
-    //   comment= await comment.populate("user");
-      comment = await comment.populate("user", "username email").execPopulate();
-    //   console.log(comment);
-    
+    comment = await Comment.findById(comment._id)
+      .populate("user", "username email avatar")
+      .populate("likes");
+
+    try {
       emailQueue
         .add({ comment }, { delay: 1000 })
         .then(() => {
@@ -38,13 +62,25 @@ module.exports.create = async function (req, res) {
         .catch((err) => {
           console.log("error in adding job to emailQueue", err);
         });
-
-      req.flash("success", "Comment Created");
-
-        return res.redirect("back");
+    } catch (queueErr) {
+      console.log("emailQueue unavailable", queueErr);
     }
+
+    if (wantsJson(req)) {
+      return res.json({
+        success: true,
+        message: "Comment created",
+        comment: formatComment(comment),
+      });
+    }
+
+    req.flash("success", "Comment Created");
+    return res.redirect("back");
   } catch (err) {
     console.log(err);
+    if (wantsJson(req)) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
     req.flash("error", err.message);
     return res.redirect("back");
   }
@@ -54,33 +90,48 @@ module.exports.destroy = async function (req, res) {
   try {
     let comment = await Comment.findById(req.params.id);
 
-    console.log(comment.user.id);
-    if (comment.user == req.user.id) {
-      let postId = comment.post;
-
-      comment.remove();
-
-      let post = Post.findByIdAndUpdate(postId, {
-        $pull: { comments: req.params.id },
-      });
-
-      // CHANGE :: destroy the associated likes for this comment
-      await Like.deleteMany({ likeable: comment._id, onModel: "Comment" });
-
-
-
-      req.flash("success", "Comment deleted!");
-
+    if (!comment) {
+      if (wantsJson(req)) {
+        return res.status(404).json({ success: false, message: "Comment not found" });
+      }
+      req.flash("error", "Comment not found");
       return res.redirect("back");
-    } else {
+    }
+
+    if (comment.user != req.user.id) {
+      if (wantsJson(req)) {
+        return res.status(403).json({ success: false, message: "Unauthorized" });
+      }
       req.flash("error", "Unauthorized");
       return res.redirect("back");
     }
-  }
-  catch (err) {
-    req.flash("error", err);
+
+    let postId = comment.post;
+
+    await comment.remove();
+
+    await Post.findByIdAndUpdate(postId, {
+      $pull: { comments: req.params.id },
+    });
+
+    await Like.deleteMany({ likeable: comment._id, onModel: "Comment" });
+
+    if (wantsJson(req)) {
+      return res.json({
+        success: true,
+        message: "Comment deleted",
+        commentId: req.params.id,
+      });
+    }
+
+    req.flash("success", "Comment deleted!");
+    return res.redirect("back");
+  } catch (err) {
     console.log(err);
-    return;
+    if (wantsJson(req)) {
+      return res.status(500).json({ success: false, message: "Could not delete comment" });
+    }
+    req.flash("error", err.message);
+    return res.redirect("back");
   }
 };
-

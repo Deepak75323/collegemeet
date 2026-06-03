@@ -1,202 +1,154 @@
-<div class="blog_top m-2">
-  <div id="main-content" class="blog-page">
-    <div class="container">
-      <div class="row clearfix">
-        <div class="col-lg-8 col-md-12 left-box">
-          <div class="card_details single_post">
-            <div class="body">
-              <div class="img-post">
-                <img
-                  class="d-block img-fluid"
-                  src="<%= post.blog_image %>"
-                  alt="First slide"
-                />
-              </div>
-              <h3 class="stop_flow">
-                <a href="blog-details.html" class="text-white"
-                  ><%=post.title %></a
-                >
-              </h3>
-              <p class="text-white stop_flow"><%= post.description %></p>
-              <br>
-              <% if (locals.user){ %>
-                <a class="toggle-like-button" href="/likes/toggle/?id=<%=post._id%>&type=Post">
-                   <h5><%= post.likes.length %> Likes</h5>
-                   <!-- <div class="heart-btn">
-                    <div class="content">
-                      <span class="heart"></span>
-                      <span class="text">Like</span>
-                      <span class="numb"></span>
-                    </div>
-                  </div> -->
-                </a>
-            <% }else{ %>
-               <h5> <%= post.likes.length %> Likes</h5>
-        
-               <!-- <div class="heart-btn">
-                <div class="content">
-                  <span class="heart"></span>
-                  <span class="text">Like</span>
-                  <span class="numb"></span>
-                </div>
-              </div> -->
-            <% } %>
-            
-            </div>
-          </div>
-          <div class="card_details">
-            <div class="header">
-              <h2>Comments</h2>
-            </div>
+<%
+function displayName(u) {
+  if (!u) return 'Member';
+  return (u && (u.username || u.email)) || 'Member';
+}
+function formatDate(d) {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch (e) {
+    return String(d);
+  }
+}
+function safeImage(src) {
+  if (!src || typeof src !== 'string') return '/images/work-1.webp';
+  if (src.indexOf('/uploads/') === 0 || src.indexOf('/images/') === 0) return src;
+  return '/images/work-1.webp';
+}
+var authorName = displayName(post.user);
+var heroImg = safeImage(post.blog_image);
+%>
 
-            <% for(comment of post.comments) {%>
-            <div class="body">
+<nav class="cm-page-nav" aria-label="Post navigation">
+  <a href="/" class="cm-page-nav__btn">
+    <i class="fas fa-home" aria-hidden="true"></i>
+    <span>Home</span>
+  </a>
+  <button type="button" class="cm-page-nav__btn" id="cm-go-back" data-fallback="/work" aria-label="Go back">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    <span>Back</span>
+  </button>
+</nav>
 
-              <!-- && locals.user.id == comment.user.id -->
-              <% if( locals.user &&  locals.user.id == comment.user) { %>
-                <a href="/comments/destroy/<%=comment.id%>">
-                  <h6>Delete comment</h6>
-                  <i class="uil uil-trash-alt"></i>
-                </a>
-                <% }%>
-              <ul class="comment-reply list-unstyled">
-                <li class="row clearfix">
-                  <div class="icon-box col-md-2 col-4">
-                  <%  if(comment.user.avatar)
-                  {%>
-                    <img
-                    class="img-fluid img-thumbnail"
-                    src="<%=comment.user.avatar%>"
-                    alt="Awesome Image"
-                  />
+<article class="cm-page post-detail">
+  <div class="post-detail__layout">
+    <main class="post-detail__main">
+      <header class="post-detail__hero cm-reveal">
+        <% if (post.category) { %>
+          <span class="post-detail__badge"><%= post.category %></span>
+        <% } %>
+        <h1 class="post-detail__title"><%= post.title %></h1>
+        <p class="post-detail__meta">
+          <span><i class="fas fa-user"></i> <%= authorName %></span>
+          <span><i class="fas fa-calendar"></i> <%= formatDate(post.createdAt) %></span>
+        </p>
+      </header>
 
-                  <%}else{%>
-                    
-                    <img
-                      class="img-fluid img-thumbnail"
-                      src="https://bootdey.com/img/Content/avatar/avatar7.png"
-                      alt="Awesome Image"
-                    />
-                    <%}%>
-                  </div>
-                  <div class="text-box col-md-10 col-8 p-l-0 p-r0 text-white">
-                    <h5 class="m-b-0"><%= comment.user.username %></h5>
-                    <p class="text-white"><%= comment.content %></p>
-
-                  
-                    <ul class="list-inline">
-                      <li>
-                        <a href="javascript:void(0);"
-                          ><%= comment.createdAt %></a
-                        >
-                      </li>
-                   
-                    </ul>
-                    <ul class="list-inline">
-                      
-                        <li>
-                          <% if (locals.user){ %>
-                            <a class="toggle-like-button" href="/likes/toggle/?id=<%=comment._id%>&type=Comment">
-                               <h5><%= comment.likes.length %> Likes</h5>
-                               <!-- <div class="heart-btn">
-                                <div class="content">
-                                  <span class="heart"></span>
-                                  <span class="text">Like</span>
-                                  <span class="numb"></span>
-                                </div>
-                              </div> -->
-                            </a>
-                        <% }else{ %>
-                           <h5> <%= post.likes.length %> Likes</h5>
-                    
-                           <!-- <div class="heart-btn">
-                            <div class="content">
-                              <span class="heart"></span>
-                              <span class="text">Like</span>
-                              <span class="numb"></span>
-                            </div>
-                          </div> -->
-                        <% } %>
-                        </li>
-                      
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-           
-            </div>
-            <%}%>
-          </div>
-
-          <% if(locals.user) { %>
-          <div class="card_details">
-            <div class="header">
-              <h2>
-                Leave a reply
-                <small
-                  >Your data will not be published. Required fields are
-                  marked*</small
-                >
-              </h2>
-            </div>
-            <div class="body">
-              <div class="comment-form">
-                <form
-                  action="/comments/create"
-                  method="post"
-                  class="row clearfix"
-                >
-                  <div class="col-sm-12">
-                    <div class="form-group">
-                      <input
-                        type="hidden"
-                        name="post"
-                        value="<%= post._id %>"
-                      />
-                      <textarea
-                        rows="4"
-                        name="content"
-                        class="form-control no-resize"
-                        placeholder="Please type what you want..."
-                      ></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-block blog_upload">
-                      SUBMIT
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          <%}%>
-        </div>
-        <div class="col-lg-4 col-md-12 right-box">
-          <div class="card_details">
-            <div class="header">
-              <h2>Popular Posts</h2>
-            </div>
-            <div class="body widget popular-post">
-              <div class="row">
-                <div class="col-lg-12">
-                  <% for(post of posts) {%>
-
-                  <div class="single_post">
-                    <p class="text-white m-b-0"><%=post.title%></p>
-                    <span class="text-white"><%=post.createdAt %></span>
-                    <div class="img-post">
-                      <a href="/posts/<%=post._id %>"
-                        ><img src="<%= post.blog_image %>" alt="Awesome Image" />
-                      </a>
-                    </div>
-                  </div>
-
-                  <%}%>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="post-detail__media cm-reveal">
+        <img src="<%= heroImg %>" alt="<%= post.title %>" class="post-detail__img">
       </div>
-    </div>
+
+      <div class="post-detail__content cm-reveal">
+        <p><%= post.description %></p>
+      </div>
+
+      <div class="post-detail__actions cm-reveal">
+        <% if (locals.user) { %>
+          <a class="toggle-like-button post-detail__like" href="/likes/toggle/?id=<%= post._id %>&type=Post">
+            <i class="fas fa-heart"></i>
+            <span><%= post.likes.length === 1 ? '1 Like' : post.likes.length + ' Likes' %></span>
+          </a>
+        <% } else { %>
+          <span class="post-detail__like post-detail__like--static">
+            <i class="fas fa-heart"></i>
+            <span><%= post.likes.length === 1 ? '1 Like' : post.likes.length + ' Likes' %></span>
+          </span>
+        <% } %>
+        <a href="/work" class="post-detail__back-link">← All notices</a>
+      </div>
+
+      <section class="post-detail__comments cm-reveal">
+        <h2 class="post-detail__section-title">Comments (<%= post.comments.length %>)</h2>
+
+        <div id="comments-list" class="post-detail__comments-list">
+          <% if (!post.comments.length) { %>
+            <p class="post-detail__empty">No comments yet. Be the first to reply.</p>
+          <% } else { post.comments.forEach(function (comment) {
+            var cUser = comment.user;
+            var cName = displayName(cUser);
+            var cAvatar = (cUser && cUser.avatar) ? cUser.avatar : '/images/avatar7.png';
+          %>
+          <div class="post-comment comment-item" data-comment-id="<%= comment.id %>">
+            <% if (locals.user && locals.user.id == comment.user.id) { %>
+              <button type="button" class="post-comment__delete comment-delete-btn" data-comment-id="<%= comment.id %>" title="Delete comment">
+                <i class="uil uil-trash-alt"></i>
+              </button>
+            <% } %>
+            <img src="<%= cAvatar %>" alt="" class="post-comment__avatar">
+            <div class="post-comment__body">
+              <div class="post-comment__head">
+                <strong class="post-comment__name"><%= cName %></strong>
+                <time class="post-comment__time"><%= formatDate(comment.createdAt) %></time>
+              </div>
+              <p class="post-comment__text"><%= comment.content %></p>
+              <% if (locals.user) { %>
+                <a class="toggle-like-button post-comment__like" href="/likes/toggle/?id=<%= comment._id %>&type=Comment">
+                  <i class="fas fa-heart"></i> <%= comment.likes.length === 1 ? '1 Like' : comment.likes.length + ' Likes' %>
+                </a>
+              <% } else { %>
+                <span class="post-comment__like post-comment__like--static">
+                  <i class="fas fa-heart"></i> <%= comment.likes.length === 1 ? '1 Like' : comment.likes.length + ' Likes' %>
+                </span>
+              <% } %>
+            </div>
+          </div>
+          <% }); } %>
+        </div>
+      </section>
+
+      <% if (locals.user) { %>
+      <section class="post-detail__reply cm-reveal">
+        <h2 class="post-detail__section-title">Leave a reply</h2>
+        <form
+          id="create-comment-form"
+          action="/comments/create"
+          method="post"
+          class="post-detail__reply-form"
+          data-user-id="<%= user.id %>"
+        >
+          <input type="hidden" name="post" value="<%= post._id %>">
+          <textarea
+            rows="4"
+            name="content"
+            class="post-detail__textarea"
+            placeholder="Write your comment…"
+            required
+          ></textarea>
+          <button type="submit" class="cm-btn-primary">Post Comment</button>
+        </form>
+      </section>
+      <% } %>
+    </main>
+
+    <aside class="post-detail__sidebar cm-reveal">
+      <h2 class="post-detail__sidebar-title">More notices</h2>
+      <ul class="post-detail__sidebar-list">
+        <% posts.forEach(function (popularPost) {
+          if (String(popularPost._id) === String(post._id)) return;
+          var thumb = safeImage(popularPost.blog_image);
+        %>
+        <li class="post-detail__sidebar-item">
+          <a href="/posts/<%= popularPost._id %>" class="post-detail__sidebar-link">
+            <img src="<%= thumb %>" alt="" class="post-detail__sidebar-thumb">
+            <div>
+              <p class="post-detail__sidebar-post-title"><%= popularPost.title %></p>
+              <span class="post-detail__sidebar-date"><%= formatDate(popularPost.createdAt) %></span>
+            </div>
+          </a>
+        </li>
+        <% }); %>
+      </ul>
+    </aside>
   </div>
-</div>
+</article>

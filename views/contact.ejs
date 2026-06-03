@@ -1,21 +1,994 @@
-<section id="contact">
-	<div class="sectionheader">	<h1>CONTACT</h1></div>
-	<article>
-	<p>For any query click on the message icon below and mail me your query.i will try my best to answer you .</p>
-		
-			<label for="checkcontact" class="contactbutton"><div class="mail"></div></label><input id="checkcontact" type="checkbox">
-	
-			<form action="/thankyou" method="post" class="contactform">
-				<p class="input_wrapper"><input type="text" name="contact_name" value=""  id ="contact_nom" required><label for="contact_nom">NAME</label></p>
-				<p class="input_wrapper"><input type="text" name="contact_email" value=""  id ="contact_email" required><label for="contact_email">EMAIL</label></p>
-				<p class="input_wrapper"><input type="text" name="contact_subjet" value=""  id ="contact_sujet" required><label for="contact_sujet">SUBJECT</label></p>
-				<p class="textarea_wrapper"><textarea name="contact_message" id="contact_message" required></textarea></p>
-				<p class="submit_wrapper"><input type="submit" value="Submit"></p>			
-						
-			</form>
-	</article>
-</section>
+<style>
+/* ════════════════════════════════════════════════════════════════════════════
+   CONTACT PAGE — Premium SaaS Redesign
+   ════════════════════════════════════════════════════════════════════════════ */
 
+/* Reset body for this page */
+body.contact-layout-body { background: #070B14 !important; color: #fff; overflow-x: hidden; margin: 0; }
 
+.cp-home-link {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #CBD5E1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.cp-home-link:hover {
+  color: #fff;
+  border-color: rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
 
+/* ── CSS variables ─────────────────────────────────────────────────────────── */
+.cp-page {
+  --cp-bg0:        #070B14;
+  --cp-bg1:        #0F172A;
+  --cp-accent-1:   #6366F1;
+  --cp-accent-2:   #8B5CF6;
+  --cp-accent-3:   #EC4899;
+  --cp-text:       #FFFFFF;
+  --cp-text-2:     #CBD5E1;
+  --cp-text-3:     #94A3B8;
+  --cp-card:       rgba(15, 23, 42, 0.7);
+  --cp-border:     rgba(255, 255, 255, 0.07);
+  --cp-radius:     18px;
+  --cp-radius-sm:  12px;
+  --cp-blur:       blur(16px);
+  --cp-shadow:     0 24px 64px rgba(0,0,0,0.55);
+}
 
+/* ── Page wrapper ──────────────────────────────────────────────────────────── */
+.cp-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 80px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ── Animated background ───────────────────────────────────────────────────── */
+.cp-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Radial glow blobs */
+.cp-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  animation: cp-float linear infinite;
+}
+.cp-glow--1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #6366F1 0%, transparent 70%);
+  top: -200px; left: -150px;
+  animation-duration: 18s;
+}
+.cp-glow--2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #EC4899 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  animation-duration: 22s;
+  animation-direction: reverse;
+}
+.cp-glow--3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #8B5CF6 0%, transparent 70%);
+  top: 40%; left: 45%;
+  animation-duration: 26s;
+}
+
+@keyframes cp-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(40px, -30px) scale(1.06); }
+  66%       { transform: translate(-30px, 20px) scale(0.96); }
+}
+
+/* Dot grid overlay */
+.cp-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* Floating particles */
+.cp-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.7);
+  animation: cp-rise linear infinite;
+}
+@keyframes cp-rise {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-80vh) translateX(20px); opacity: 0; }
+}
+
+/* ── Content ───────────────────────────────────────────────────────────────── */
+.cp-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1240px;
+}
+
+/* ── Top badge + heading ───────────────────────────────────────────────────── */
+.cp-hero {
+  text-align: center;
+  margin-bottom: 72px;
+  animation: cp-fadein 0.7s ease both;
+}
+
+@keyframes cp-fadein {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+.cp-badge::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: cp-ping 2s ease infinite;
+}
+@keyframes cp-ping {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+  50%       { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+.cp-hero__title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 auto 18px;
+  max-width: 760px;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, #CBD5E1 50%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cp-hero__title span {
+  background: linear-gradient(90deg, #6366F1, #8B5CF6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cp-hero__sub {
+  font-size: 1rem;
+  color: var(--cp-text-3);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Two-column grid ───────────────────────────────────────────────────────── */
+.cp-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 32px;
+  align-items: start;
+  animation: cp-fadein 0.9s 0.15s ease both;
+}
+
+/* ── Left panel ────────────────────────────────────────────────────────────── */
+.cp-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cp-left__intro {
+  background: var(--cp-card);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 28px;
+  backdrop-filter: var(--cp-blur);
+  -webkit-backdrop-filter: var(--cp-blur);
+}
+
+.cp-left__name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-avail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #4ade80;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cp-avail-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.cp-left__bio {
+  font-size: 0.875rem;
+  color: var(--cp-text-3);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Info cards */
+.cp-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cp-info-card {
+  background: var(--cp-card);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-sm);
+  padding: 16px;
+  backdrop-filter: var(--cp-blur);
+  -webkit-backdrop-filter: var(--cp-blur);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: default;
+}
+
+.cp-info-card:hover {
+  border-color: rgba(99,102,241,0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(99,102,241,0.12);
+}
+
+.cp-info-card__icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.cp-info-card--indigo .cp-info-card__icon { background: rgba(99,102,241,0.15); color: #818cf8; }
+.cp-info-card--violet .cp-info-card__icon { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.cp-info-card--pink   .cp-info-card__icon { background: rgba(236,72,153,0.15); color: #f472b6; }
+.cp-info-card--cyan   .cp-info-card__icon { background: rgba(6,182,212,0.15);  color: #22d3ee; }
+.cp-info-card--green  .cp-info-card__icon { background: rgba(34,197,94,0.15);  color: #4ade80; }
+.cp-info-card--amber  .cp-info-card__icon { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+.cp-info-card__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cp-text-3);
+  margin-bottom: 3px;
+}
+
+.cp-info-card__value {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--cp-text-2);
+  word-break: break-all;
+}
+
+/* Social links */
+.cp-socials {
+  background: var(--cp-card);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-sm);
+  padding: 18px 20px;
+  backdrop-filter: var(--cp-blur);
+  -webkit-backdrop-filter: var(--cp-blur);
+}
+
+.cp-socials__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cp-text-3);
+  margin-bottom: 14px;
+}
+
+.cp-socials__links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cp-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--cp-text-2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.cp-social-btn:hover {
+  color: #fff;
+  background: rgba(99,102,241,0.15);
+  border-color: rgba(99,102,241,0.4);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.cp-social-btn i { font-size: 1rem; }
+
+/* ── Right panel — Form ────────────────────────────────────────────────────── */
+.cp-form-card {
+  background: var(--cp-card);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius);
+  padding: 44px 40px;
+  backdrop-filter: var(--cp-blur);
+  -webkit-backdrop-filter: var(--cp-blur);
+  box-shadow: var(--cp-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle inner glow on the card */
+.cp-form-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), rgba(236,72,153,0.4), transparent);
+}
+
+.cp-form-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.cp-form-card__sub {
+  font-size: 0.875rem;
+  color: var(--cp-text-3);
+  margin: 0 0 36px;
+}
+
+/* Row */
+.cp-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Floating label field */
+.cp-field {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.cp-field label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: var(--cp-text-3);
+  pointer-events: none;
+  transition: all 0.22s cubic-bezier(.22,1,.36,1);
+  background: transparent;
+  padding: 0 4px;
+  z-index: 1;
+}
+
+.cp-field--textarea label {
+  top: 20px;
+  transform: none;
+}
+
+/* Float state — triggered via .is-active class by JS */
+.cp-field.is-active label,
+.cp-field.has-value label {
+  top: -1px;
+  transform: translateY(-50%);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #818cf8;
+  background: #0d1426;
+  padding: 0 6px;
+}
+
+.cp-field--textarea.is-active label,
+.cp-field--textarea.has-value label {
+  top: -1px;
+  transform: translateY(-50%);
+}
+
+.cp-field input,
+.cp-field textarea,
+.cp-field select {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 18px 16px 10px;
+  font-size: 0.9rem;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  caret-color: #818cf8;
+}
+
+.cp-field input:focus,
+.cp-field textarea:focus,
+.cp-field select:focus {
+  border-color: rgba(99,102,241,0.7);
+  background: rgba(99,102,241,0.05);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12), 0 0 20px rgba(99,102,241,0.08);
+}
+
+.cp-field textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.6;
+  padding-top: 22px;
+}
+
+/* Validation */
+.cp-field.is-error input,
+.cp-field.is-error textarea {
+  border-color: rgba(239,68,68,0.7);
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+.cp-field.is-error label { color: #f87171; }
+
+.cp-field__err {
+  display: none;
+  font-size: 0.72rem;
+  color: #f87171;
+  margin-top: 5px;
+  padding-left: 4px;
+}
+.cp-field.is-error .cp-field__err { display: block; }
+
+/* Character count for textarea */
+.cp-field__count {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: 0.65rem;
+  color: var(--cp-text-3);
+  pointer-events: none;
+}
+
+/* Submit button */
+.cp-submit {
+  position: relative;
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cp-submit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #818CF8, #A78BFA, #F472B6);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cp-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(99,102,241,0.4), 0 4px 16px rgba(236,72,153,0.25);
+}
+.cp-submit:hover::before { opacity: 1; }
+.cp-submit:active { transform: translateY(0); }
+
+.cp-submit__text,
+.cp-submit__arrow,
+.cp-submit__spinner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cp-submit__spinner { display: none; }
+.cp-submit__spinner svg {
+  width: 18px; height: 18px;
+  animation: cp-spin 0.8s linear infinite;
+}
+@keyframes cp-spin { to { transform: rotate(360deg); } }
+
+.cp-submit--loading .cp-submit__text { opacity: 0.6; }
+.cp-submit--loading .cp-submit__arrow { display: none; }
+.cp-submit--loading .cp-submit__spinner { display: flex; }
+
+/* Shimmer on the button */
+.cp-submit::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+.cp-submit:hover::after { left: 140%; }
+
+/* ── Success overlay ────────────────────────────────────────────────────────── */
+.cp-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 16px;
+}
+
+.cp-success.is-visible { display: flex; }
+.cp-form-inner.is-hidden { display: none; }
+
+.cp-success__icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.15);
+  border: 2px solid rgba(34,197,94,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #4ade80;
+  animation: cp-popin 0.5s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes cp-popin {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.cp-success__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.cp-success__body {
+  font-size: 0.875rem;
+  color: var(--cp-text-3);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 360px;
+}
+
+.cp-success__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  color: #a5b4fc;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.cp-success__btn:hover {
+  background: rgba(99,102,241,0.25);
+  border-color: rgba(99,102,241,0.6);
+  color: #c7d2fe;
+  text-decoration: none;
+}
+
+/* ── Page entry animation ───────────────────────────────────────────────────── */
+.cp-reveal {
+  animation: cp-fadein 0.7s ease both;
+}
+.cp-reveal--delay-1 { animation-delay: 0.1s; }
+.cp-reveal--delay-2 { animation-delay: 0.2s; }
+.cp-reveal--delay-3 { animation-delay: 0.3s; }
+.cp-reveal--delay-4 { animation-delay: 0.4s; }
+
+/* ── Mobile responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .cp-grid-2col { grid-template-columns: 1fr; }
+  .cp-form-card { padding: 32px 24px; }
+  .cp-hero { margin-bottom: 48px; }
+}
+
+@media (max-width: 580px) {
+  .cp-page { padding: 40px 16px 60px; }
+  .cp-info-grid { grid-template-columns: 1fr 1fr; }
+  .cp-form-row  { grid-template-columns: 1fr; }
+  .cp-hero__title { font-size: 1.8rem; }
+  .cp-form-card { padding: 28px 18px; }
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONTACT PAGE
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<a href="/" class="cp-home-link"><i class="fas fa-arrow-left"></i> Home</a>
+
+<div class="cp-page">
+
+  <!-- Background -->
+  <div class="cp-bg">
+    <div class="cp-glow cp-glow--1"></div>
+    <div class="cp-glow cp-glow--2"></div>
+    <div class="cp-glow cp-glow--3"></div>
+    <div class="cp-grid"></div>
+    <!-- Particles injected by JS -->
+  </div>
+
+  <div class="cp-content">
+
+    <!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+    <div class="cp-hero cp-reveal">
+      <div class="cp-badge">Available for opportunities</div>
+      <h1 class="cp-hero__title">
+        Let's Build Something<br>
+        <span>Amazing Together</span>
+      </h1>
+      <p class="cp-hero__sub">
+        Available for freelance projects, collaborations, startup ideas, and full-time opportunities. I'd love to hear what you're working on.
+      </p>
+    </div>
+
+    <!-- ── Two-column layout ─────────────────────────────────────────────────── -->
+    <div class="cp-grid-2col">
+
+      <!-- ── Left: Info panel ─────────────────────────────────────────────────── -->
+      <div class="cp-left">
+
+        <!-- Profile intro -->
+        <div class="cp-left__intro cp-reveal cp-reveal--delay-1">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <span class="cp-left__name">Deepak Mishra</span>
+            <span class="cp-avail-badge">Open to work</span>
+          </div>
+          <p class="cp-left__bio">
+            Full-stack developer passionate about building products that people love. I specialize in Node.js, React, WebRTC, and real-time systems. Let's create something great together.
+          </p>
+        </div>
+
+        <!-- Contact info cards -->
+        <div class="cp-info-grid cp-reveal cp-reveal--delay-2">
+          <div class="cp-info-card cp-info-card--indigo">
+            <div class="cp-info-card__icon"><i class="fas fa-envelope"></i></div>
+            <div class="cp-info-card__label">Email</div>
+            <div class="cp-info-card__value">dm75323@gmail.com</div>
+          </div>
+          <div class="cp-info-card cp-info-card--violet">
+            <div class="cp-info-card__icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="cp-info-card__label">Location</div>
+            <div class="cp-info-card__value">India 🇮🇳</div>
+          </div>
+          <div class="cp-info-card cp-info-card--green">
+            <div class="cp-info-card__icon"><i class="fas fa-clock"></i></div>
+            <div class="cp-info-card__label">Response Time</div>
+            <div class="cp-info-card__value">Within 24 hours</div>
+          </div>
+          <div class="cp-info-card cp-info-card--amber">
+            <div class="cp-info-card__icon"><i class="fas fa-coffee"></i></div>
+            <div class="cp-info-card__label">Timezone</div>
+            <div class="cp-info-card__value">IST (UTC +5:30)</div>
+          </div>
+          <div class="cp-info-card cp-info-card--pink">
+            <div class="cp-info-card__icon"><i class="fas fa-briefcase"></i></div>
+            <div class="cp-info-card__label">Availability</div>
+            <div class="cp-info-card__value">Immediate</div>
+          </div>
+          <div class="cp-info-card cp-info-card--cyan">
+            <div class="cp-info-card__icon"><i class="fas fa-code"></i></div>
+            <div class="cp-info-card__label">Experience</div>
+            <div class="cp-info-card__value">Full-Stack Dev</div>
+          </div>
+        </div>
+
+        <!-- Social links -->
+        <div class="cp-socials cp-reveal cp-reveal--delay-3">
+          <div class="cp-socials__label">Find me online</div>
+          <div class="cp-socials__links">
+            <a href="https://github.com/" target="_blank" rel="noopener" class="cp-social-btn">
+              <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="https://linkedin.com/" target="_blank" rel="noopener" class="cp-social-btn">
+              <i class="fab fa-linkedin-in"></i> LinkedIn
+            </a>
+            <a href="https://twitter.com/" target="_blank" rel="noopener" class="cp-social-btn">
+              <i class="fab fa-twitter"></i> Twitter
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /cp-left -->
+
+      <!-- ── Right: Form ──────────────────────────────────────────────────────── -->
+      <div class="cp-form-card cp-reveal cp-reveal--delay-2">
+
+        <!-- Success state -->
+        <div class="cp-success" id="cp-success">
+          <div class="cp-success__icon">✓</div>
+          <h3 class="cp-success__title">Message Sent!</h3>
+          <p class="cp-success__body">
+            Thanks for reaching out! I'll get back to you within 24 hours.<br>
+            Looking forward to our conversation.
+          </p>
+          <a href="/" class="cp-success__btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+
+        <!-- Form -->
+        <div class="cp-form-inner" id="cp-form-inner">
+          <h2 class="cp-form-card__title">Send a Message</h2>
+          <p class="cp-form-card__sub">Fill out the form and I'll get back to you as soon as possible.</p>
+
+          <form id="cp-form" action="/thankyou" method="post" novalidate>
+
+            <div class="cp-form-row">
+              <div class="cp-field" data-type="input">
+                <input type="text" name="contact_name" id="cp-name" autocomplete="name" required>
+                <label for="cp-name">Your Name</label>
+                <span class="cp-field__err">Please enter your name.</span>
+              </div>
+              <div class="cp-field" data-type="input">
+                <input type="email" name="contact_email" id="cp-email" autocomplete="email" required>
+                <label for="cp-email">Email Address</label>
+                <span class="cp-field__err">Enter a valid email address.</span>
+              </div>
+            </div>
+
+            <div class="cp-field" data-type="input">
+              <input type="text" name="contact_subject" id="cp-subject" required>
+              <label for="cp-subject">Subject</label>
+              <span class="cp-field__err">Please enter a subject.</span>
+            </div>
+
+            <div class="cp-field cp-field--textarea" data-type="textarea">
+              <textarea name="contact_message" id="cp-message" maxlength="1000" required></textarea>
+              <label for="cp-message">Your Message</label>
+              <span class="cp-field__count" id="cp-char-count">0 / 1000</span>
+              <span class="cp-field__err">Please write your message.</span>
+            </div>
+
+            <button type="submit" class="cp-submit" id="cp-submit">
+              <span class="cp-submit__text">Send Message</span>
+              <span class="cp-submit__arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </span>
+              <span class="cp-submit__spinner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </button>
+
+          </form>
+        </div><!-- /cp-form-inner -->
+
+      </div><!-- /cp-form-card -->
+    </div><!-- /cp-grid-2col -->
+  </div><!-- /cp-content -->
+</div><!-- /cp-page -->
+
+<script>
+(function () {
+  /* ── Floating particles ──────────────────────────────────────────────────── */
+  const bg = document.querySelector('.cp-bg');
+  if (bg) {
+    for (let i = 0; i < 24; i++) {
+      const p = document.createElement('div');
+      p.className = 'cp-particle';
+      p.style.cssText = `
+        left: ${Math.random() * 100}%;
+        bottom: ${Math.random() * 20}%;
+        width: ${Math.random() < 0.5 ? 2 : 3}px;
+        height: ${Math.random() < 0.5 ? 2 : 3}px;
+        animation-duration: ${8 + Math.random() * 16}s;
+        animation-delay: ${-Math.random() * 16}s;
+        opacity: ${0.3 + Math.random() * 0.5};
+      `;
+      bg.appendChild(p);
+    }
+  }
+
+  /* ── Floating labels ─────────────────────────────────────────────────────── */
+  document.querySelectorAll('.cp-field').forEach(function (field) {
+    const input = field.querySelector('input, textarea');
+    if (!input) return;
+
+    function checkValue() {
+      field.classList.toggle('has-value', input.value.trim().length > 0);
+    }
+
+    input.addEventListener('focus',  function () { field.classList.add('is-active'); });
+    input.addEventListener('blur',   function () { field.classList.remove('is-active'); checkValue(); });
+    input.addEventListener('input',  checkValue);
+    checkValue();
+  });
+
+  /* ── Character counter ───────────────────────────────────────────────────── */
+  const msgEl    = document.getElementById('cp-message');
+  const countEl  = document.getElementById('cp-char-count');
+  if (msgEl && countEl) {
+    msgEl.addEventListener('input', function () {
+      countEl.textContent = msgEl.value.length + ' / 1000';
+      countEl.style.color = msgEl.value.length > 900 ? '#f87171' : '';
+    });
+  }
+
+  /* ── Form validation & submission ───────────────────────────────────────── */
+  const form      = document.getElementById('cp-form');
+  const submitBtn = document.getElementById('cp-submit');
+  const formInner = document.getElementById('cp-form-inner');
+  const successEl = document.getElementById('cp-success');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Clear previous errors
+    document.querySelectorAll('.cp-field').forEach(function (f) { f.classList.remove('is-error'); });
+
+    // Validate
+    let valid = true;
+    const fields = [
+      { id: 'cp-name',    check: function (v) { return v.trim().length >= 2; } },
+      { id: 'cp-email',   check: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); } },
+      { id: 'cp-subject', check: function (v) { return v.trim().length >= 2; } },
+      { id: 'cp-message', check: function (v) { return v.trim().length >= 10; } },
+    ];
+
+    fields.forEach(function (f) {
+      const input = document.getElementById(f.id);
+      if (!input) return;
+      const field = input.closest('.cp-field');
+      if (!f.check(input.value)) {
+        if (field) field.classList.add('is-error');
+        valid = false;
+      }
+    });
+
+    if (!valid) {
+      // Shake the button
+      submitBtn.style.animation = 'none';
+      submitBtn.offsetHeight;
+      submitBtn.style.animation = '';
+      return;
+    }
+
+    // Loading state
+    submitBtn.classList.add('cp-submit--loading');
+    submitBtn.disabled = true;
+
+    try {
+      const data = new URLSearchParams(new FormData(form));
+      const res  = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data,
+        redirect: 'follow',
+      });
+
+      if (res.ok) {
+        // Show inline success
+        formInner.classList.add('is-hidden');
+        successEl.classList.add('is-visible');
+        successEl.style.animation = 'cp-fadein 0.5s ease both';
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (err) {
+      // Fallback: submit normally
+      form.submit();
+    } finally {
+      submitBtn.classList.remove('cp-submit--loading');
+      submitBtn.disabled = false;
+    }
+  });
+
+  /* ── Scroll reveal ───────────────────────────────────────────────────────── */
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.cp-info-card, .cp-left__intro, .cp-socials').forEach(function (el) {
+      el.style.opacity    = '0';
+      el.style.transform  = 'translateY(18px)';
+      el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+      observer.observe(el);
+    });
+  }
+}());
+</script>

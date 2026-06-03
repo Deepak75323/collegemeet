@@ -46,64 +46,64 @@
                             <!-- Form Group (username)-->
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputUsername">name</label>
-                                <input class="form-control-profile" id="inputUsername" name="name" type="text" placeholder="Enter your username">
+                                <input class="form-control-profile" id="inputUsername" name="name" type="text" placeholder="Enter your username" value="<%= user.name && user.name !== 'none' ? user.name : '' %>">
                             </div>
                             <!-- Form Row-->
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inputUsername">password(write current if you don't wanaa change)</label>
-                                <input class="form-control-profile" id="inputpassword" name="password" type="password" placeholder="Enter your password">
+                                <label class="small mb-1" for="inputpassword">password (leave blank to keep current)</label>
+                                <input class="form-control-profile" id="inputpassword" name="password" type="password" placeholder="Enter new password">
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inputUsername">confirm password(write the password)</label>
-                                <input class="form-control-profile" id="inputpassword" name="confirm_password" type="password" placeholder="Enter your password">
+                                <label class="small mb-1" for="inputconfirmpassword">confirm password</label>
+                                <input class="form-control-profile" id="inputconfirmpassword" name="confirm_password" type="password" placeholder="Confirm new password">
                             </div>
                             <div class="row gx-3 mb-3">
                             
                                 <div class="col-md-6">
                                     <label class="small mb-1" for="expertise">Expertise</label>
-                                    <input class="form-control-profile" id="expertise" type="text" name="expertise" placeholder="Enter your expertise">
+                                    <input class="form-control-profile" id="expertise" type="text" name="expertise" placeholder="Enter your expertise" value="<%= user.expertise && user.expertise !== 'none' ? user.expertise : '' %>">
                                 </div>
                                 
                                 <div class="col-md-6">
                                     <label class="small mb-1" for="experience">Experience</label>
-                                    <input class="form-control-profile" id="experience" type="text" name="experience" placeholder="Enter your experience" >
+                                    <input class="form-control-profile" id="experience" type="text" name="experience" placeholder="Enter your experience" value="<%= user.experience || '' %>">
                                 </div>
                             </div>
                         
                             <!-- Form Group (email address)-->
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputEmailAddress">Email address</label>
-                                <input class="form-control-profile" id="inputEmailAddress" type="email" name="email" placeholder="Enter your email address" >
+                                <input class="form-control-profile" id="inputEmailAddress" type="email" name="email" placeholder="Enter your email address" value="<%= user.email || '' %>">
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inputEmailAddress">projects</label>
-                                <input class="form-control-profile" id="inputprject" type="number" name="project" placeholder="Enter your number of projects" >
+                                <label class="small mb-1" for="inputprject">projects</label>
+                                <input class="form-control-profile" id="inputprject" type="number" name="project" placeholder="Enter your number of projects" value="<%= user.project && user.project !== 'none' ? user.project : '' %>">
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inputleetcode">Description</label>
-                                <textarea class="form-control-profile" id="inputdescribe" rows="5" cols="2" type="text" name="describe" placeholder="Describe yourself" ></textarea>
+                                <label class="small mb-1" for="inputdescribe">Description</label>
+                                <textarea class="form-control-profile" id="inputdescribe" rows="5" cols="2" name="describe" placeholder="Describe yourself"><%= user.describe && user.describe !== 'none' ? user.describe : '' %></textarea>
                             </div>
                             <!-- Form Group (leetcode id)-->
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputleetcode">Leetcode ID</label>
-                                <input class="form-control-profile" id="inputleetcode" type="text"  placeholder="Enter your Leetcode id" name="leetcode" >
+                                <input class="form-control-profile" id="inputleetcode" type="text"  placeholder="Enter your Leetcode id" name="leetcode" value="<%= user.leetcode && user.leetcode !== 'none' ? user.leetcode : '' %>">
                             </div>
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputcodeforces">Codeforces ID</label>
-                                <input class="form-control-profile" id="inputcodeforces" type="text" placeholder="Enter your codeforces id" name="codechef" >
+                                <input class="form-control-profile" id="inputcodeforces" type="text" placeholder="Enter your codeforces id" name="codeforces" value="<%= user.codeforces && user.codeforces !== 'none' ? user.codeforces : '' %>">
                             </div>
                             <div class="mb-3">
                                 <label class="small mb-1" for="inputcodechef">CodeChef ID</label>
-                                <input class="form-control-profile" id="inputcodechef" type="text" placeholder="Enter your codechef id" name="codeforces" >
+                                <input class="form-control-profile" id="inputcodechef" type="text" placeholder="Enter your codechef id" name="codechef" value="<%= user.codechef && user.codechef !== 'none' ? user.codechef : '' %>">
                             </div>
                             <!-- Form Row-->
                          
                             <!-- Save changes button-->
-                            <button class="btn blog_upload" type="button ">Save changes</button>
+                            <button class="btn blog_upload" type="submit">Save changes</button>
                         </form>
                     </div>
                 </div>

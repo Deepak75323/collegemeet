@@ -1,8 +1,10 @@
 const User = require("../models/user");
 const Post = require("../models/post");
-const Contact= require("../models/contact");
-const fs=require("fs");
-const path = require('path');
+const Contact = require("../models/contact");
+const fs = require("fs");
+const path = require("path");
+const { hashPassword } = require("../utils/password");
+const { getClientTurnConfig } = require("../utils/webrtc-config");
 
 module.exports.home = function (req, res) {
   return res.render("home", {
@@ -10,186 +12,209 @@ module.exports.home = function (req, res) {
   });
 };
 
-module.exports.update = async function (req, res){
-  if (req.user.id == req.params.id) {
-    try {
-      let user = await User.findById(req.params.id);
-      User.uploadedAvatar(req, res, function (err) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-        // console.log(req.file);
-        user.name = req.body.name;
-        user.email = req.body.email;
-        if(req.body.password==req.body.confirm_password){
-        user.password = req.body.password;
-        }
-        user.experience = req.body.experience;
-        user.expertise = req.body.expertise;
-        user.describe=req.body.describe;
-        user.leetcode= req.body.leetcode;
-        user.codeforces= req.body.codeforces;
-        user.codechef= req.body.codechef;
-        user.project= req.body.project;
-
-
-        // console.log(req.file);
-        if (req.file  ) 
-        {
-
-          if (user.avatar && fs.existsSync(path.join(__dirname, "..", user.avatar))) 
-           {
-            fs.unlinkSync(path.join(__dirname, "..", user.avatar));
-          }
-         
-// this is saving the path of the uploaded file into the avatar field in the user
-          user.avatar = User.avatarPath + "/" + req.file.filename;
-        }
-        user.save();
-        req.flash("success", "Updated Successfully");
-        return res.redirect("back");
-      });
-    } catch (error) {
-      req.flash("error", error.message);
-      console.log(error);
-      return res.redirect("back");
-    }
-  } 
-  else {
+module.exports.update = async function (req, res) {
+  if (req.user.id != req.params.id) {
     req.flash("error", "Unauthorized");
     return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    let user = await User.findById(req.params.id);
+    User.uploadedAvatar(req, res, async function (err) {
+      if (err) {
+        req.flash("error", err.message);
+        return res.redirect("back");
+      }
+
+      user.name = req.body.name;
+      user.email = req.body.email;
+
+      if (
+        req.body.password &&
+        req.body.confirm_password &&
+        req.body.password === req.body.confirm_password
+      ) {
+        user.password = await hashPassword(req.body.password);
+      }
+
+      user.experience = req.body.experience;
+      user.expertise = req.body.expertise;
+      user.describe = req.body.describe;
+      user.leetcode = req.body.leetcode;
+      user.codeforces = req.body.codeforces;
+      user.codechef = req.body.codechef;
+      user.project = req.body.project;
+
+      if (req.file) {
+        if (
+          user.avatar &&
+          fs.existsSync(path.join(__dirname, "..", user.avatar))
+        ) {
+          fs.unlinkSync(path.join(__dirname, "..", user.avatar));
+        }
+        user.avatar = User.avatarPath + "/" + req.file.filename;
+      }
+
+      await user.save();
+      req.flash("success", "Updated Successfully");
+      return res.redirect("back");
+    });
+  } catch (error) {
+    req.flash("error", error.message);
+    return res.redirect("back");
   }
 };
 
 module.exports.about = function (req, res) {
   User.findById(req.params.id, function (err, user) {
     if (err) {
-      console.log("error in finding user");
-      return;
+      req.flash("error", "Could not load profile");
+      return res.redirect("/");
     }
-
-    console.log(user);
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/");
+    }
     return res.render("about", {
       title: "About",
       profile_user: user,
     });
   });
 };
+
 module.exports.qualification = function (req, res) {
-  return res.render("qualification");
+  return res.render("qualification", { title: "Qualification" });
 };
 
 module.exports.skills = function (req, res) {
-  return res.render("skills");
+  return res.render("skills", { title: "Skills" });
 };
 
 module.exports.work = function (req, res) {
   Post.find({})
     .populate("user")
+    .populate("likes")
+    .populate("comments")
     .exec(function (err, posts) {
       User.find({}, function (err, users) {
         return res.render("work", {
-          title: "Work",
+          title: "Notices",
           posts: posts,
           all_users: users,
+          layout: "layout-notice",
         });
       });
     });
 };
+
 module.exports.contact = function (req, res) {
-  return res.render("contact");
+  return res.render("contact", { title: "Contact", layout: "layout-contact" });
 };
 
 module.exports.signin = function (req, res) {
   if (req.isAuthenticated()) {
     return res.redirect("/");
   }
-  return res.render("sign_in");
+  return res.render("sign_in", { title: "Sign In", layout: "layout-auth" });
 };
 
 module.exports.signup = function (req, res) {
   if (req.isAuthenticated()) {
     return res.redirect("/");
   }
-
-  return res.render("sign_up");
+  return res.render("sign_in", { title: "Sign Up", layout: "layout-auth" });
 };
 
-module.exports.create = function (req, res) {
+module.exports.create = async function (req, res) {
   if (req.body.password != req.body.confirm_password) {
-    req.flash('error', 'Passwords do not match');
+    req.flash("error", "Passwords do not match");
     return res.redirect("back");
   }
 
-  User.findOne({ username: req.body.username }, function (err, user) {
+  User.findOne({ username: req.body.username }, async function (err, user) {
     if (err) {
-      console.log("error in finding user in signing up");
-      return;
+      req.flash("error", "Something went wrong");
+      return res.redirect("back");
     }
-    if (!user) {
-    
-      User.create(req.body, function (err, user) {
-        if (err) {
-          req.flash('error', err); return
-        }
+    if (user) {
+      req.flash("error", "Username already taken");
+      return res.redirect("/signin");
+    }
 
-        return res.redirect("/signin");
+    try {
+      const hashed = await hashPassword(req.body.password);
+      await User.create({
+        email: req.body.email,
+        username: req.body.username,
+        password: hashed,
       });
-    } else {
-       req.flash('success', 'You have signed up, login to continue!');
+      req.flash("success", "Account created — please sign in");
+      return res.redirect("/signin");
+    } catch (createErr) {
+      req.flash("error", createErr.message);
       return res.redirect("back");
     }
   });
 };
 
 module.exports.createSession = function (req, res) {
-
   req.flash("success", "Logged in Successfully");
   return res.redirect("/");
 };
 
 module.exports.destroySession = function (req, res) {
   req.logout();
-  console.log("logged out");
-  req.flash("success", "Logged out Successfully");
-
-  return res.redirect("/signin");
+  req.session.regenerate(function (err) {
+    if (err) {
+      req.flash("error", "Could not log out");
+      return res.redirect("/");
+    }
+    req.flash("success", "Logged out Successfully");
+    return res.redirect("/signin");
+  });
 };
 
 module.exports.userprofile = function (req, res) {
-  return res.render("user_profile");
+  return res.render("user_profile", { title: "Profile" });
 };
 
+module.exports.room = function (req, res) {
+  return res.render("room", {
+    title: "Peer Coding",
+    layout: "layout-room",
+    displayName:
+      req.user.username ||
+      (req.user.name && req.user.name !== "none" ? req.user.name : null) ||
+      req.user.email,
+    turnIce: getClientTurnConfig(),
+  });
+};
 
+module.exports.enterroom = function (req, res) {
+  return res.render("enterroom", {
+    title: "Chat Room",
+    layout: "layout-room",
+  });
+};
 
-module.exports.room=function (req, res) {
-  return res.render("room");
-}
+module.exports.privateroom = function (req, res) {
+  return res.render("privateroom", {
+    title: "Join Chat",
+    layout: "layout-room",
+  });
+};
 
-
-module.exports.enterroom=function (req, res) {
-  return res.render('enterroom.ejs');
-}
-
-
-module.exports.privateroom=function (req,res)
-{
-  return res.render("privateroom.ejs");
-}
-
-module.exports.form=function(req, res)
-{
-
-  Contact.create(req.body, function (err, user) {
+module.exports.form = function (req, res) {
+  Contact.create(req.body, function (err) {
     if (err) {
-      req.flash('error', err); return
+      req.flash("error", err.message);
+      return res.redirect("/contact");
     }
 
-    return res.render('thankyou.ejs',{
-
-      name:req.body.name
-    })
+    return res.render("thankyou", {
+      title: "Thank You",
+      name: req.body.contact_name,
+      layout: "layout-contact",
+    });
   });
-
-}
+};
