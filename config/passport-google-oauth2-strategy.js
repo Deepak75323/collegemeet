@@ -14,12 +14,18 @@ if (env.google_client_id && env.google_client_secret) {
         callbackURL: env.google_call_back_url,
       },
       function (accessToken, refreshToken, profile, done) {
-        User.findOne({ email: profile.emails[0].value }).exec(async function (
-          err,
-          user
-        ) {
+        const email =
+          profile.emails &&
+          profile.emails[0] &&
+          profile.emails[0].value;
+        if (!email) {
+          console.error("[google-oauth] Google profile missing email");
+          return done(null, false);
+        }
+
+        User.findOne({ email: email }).exec(async function (err, user) {
           if (err) {
-            console.log("error in google strategy-passport", err);
+            console.error("[google-oauth] db lookup error:", err);
             return done(err);
           }
 
@@ -29,17 +35,17 @@ if (env.google_client_id && env.google_client_secret) {
 
           try {
             const randomPassword = crypto.randomBytes(20).toString("hex");
+            const localPart = email.split("@")[0] || "user";
             user = await User.create({
-              name: profile.displayName,
-              email: profile.emails[0].value,
+              name: profile.displayName || localPart,
+              email: email,
+              username: localPart,
               password: await hashPassword(randomPassword),
             });
+            console.log("[google-oauth] created user:", email);
             return done(null, user);
           } catch (createErr) {
-            console.log(
-              "error in creating user google strategy-passport",
-              createErr
-            );
+            console.error("[google-oauth] create user error:", createErr);
             return done(createErr);
           }
         });

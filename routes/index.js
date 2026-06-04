@@ -31,11 +31,35 @@ router.get("/signup", homecontrollers.signup);
 
 router.post("/create", homecontrollers.create);
 
-router.post(
-  "/createsession",
-  passport.authenticate("local", { failureRedirect: "/signin" }),
-  homecontrollers.createSession
-);
+router.post("/createsession", function (req, res, next) {
+  passport.authenticate("local", function (err, user, info) {
+    if (err) {
+      console.error("[local-auth] error:", err);
+      req.flash("error", "Something went wrong. Please try again.");
+      return res.redirect("/signin");
+    }
+    if (!user) {
+      console.error("[local-auth] failed:", info);
+      return res.redirect("/signin");
+    }
+    req.logIn(user, function (loginErr) {
+      if (loginErr) {
+        console.error("[local-auth] logIn error:", loginErr);
+        req.flash("error", "Could not start your session. Please try again.");
+        return res.redirect("/signin");
+      }
+      req.session.save(function (saveErr) {
+        if (saveErr) {
+          console.error("[local-auth] session save error:", saveErr);
+          req.flash("error", "Could not save your session. Please try again.");
+          return res.redirect("/signin");
+        }
+        console.log("[local-auth] success:", user.username);
+        return homecontrollers.createSession(req, res);
+      });
+    });
+  })(req, res, next);
+});
 
 router.get(
   "/users/auth/google",
@@ -58,11 +82,36 @@ router.get(
 
 router.get("/work", homecontrollers.work);
 
-router.get(
-  "/users/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/signin" }),
-  homecontrollers.createSession
-);
+router.get("/users/auth/google/callback", function (req, res, next) {
+  passport.authenticate("google", function (err, user, info) {
+    if (err) {
+      console.error("[google-oauth] callback error:", err);
+      req.flash("error", "Google sign-in failed. Please try again.");
+      return res.redirect("/signin");
+    }
+    if (!user) {
+      console.error("[google-oauth] no user returned:", info);
+      req.flash("error", "Google sign-in was cancelled or denied.");
+      return res.redirect("/signin");
+    }
+    req.logIn(user, function (loginErr) {
+      if (loginErr) {
+        console.error("[google-oauth] req.logIn error:", loginErr);
+        req.flash("error", "Could not start your session. Please try again.");
+        return res.redirect("/signin");
+      }
+      req.session.save(function (saveErr) {
+        if (saveErr) {
+          console.error("[google-oauth] session save error:", saveErr);
+          req.flash("error", "Could not save your session. Please try again.");
+          return res.redirect("/signin");
+        }
+        console.log("[google-oauth] success:", user.email);
+        return homecontrollers.createSession(req, res);
+      });
+    });
+  })(req, res, next);
+});
 
 router.get("/signout", homecontrollers.destroySession);
 

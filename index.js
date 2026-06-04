@@ -7,6 +7,9 @@ const helmet = require('helmet');
 const cookieParser=require('cookie-parser');
 
 const app = express();
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 app.use(helmet({ contentSecurityPolicy: false }));
 
 const path = require('path');
@@ -66,6 +69,18 @@ app.set('views','./views');
 
 
 // mongo store is used to store the session in the db
+const mongoStoreOpts = {
+  mongooseConnection: db,
+  autoRemove: 'disabled',
+};
+
+if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+  console.error('[startup] FATAL: SESSION_SECRET is missing — no login will work on Render');
+}
+if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+  console.error('[startup] FATAL: MONGODB_URI is missing — database and sessions will fail');
+}
+
 const sessionMiddleware=session({
     name:'blog',
     secret: env.session_cookie_key,
@@ -77,14 +92,11 @@ const sessionMiddleware=session({
         secure: process.env.NODE_ENV === 'production',
         sameSite:'lax'
     },
-    store: new MongoStore({
-        mongooseConnection:db,
-        autoRemove: 'disabled'
-      },
-    function(err)
-    { 
-        console.log(err || "connect-mongo setup ok");
-    }
+    store: new MongoStore(
+      mongoStoreOpts,
+      function(err) {
+        console.log(err || 'connect-mongo setup ok');
+      }
     )
 
 });
@@ -200,5 +212,11 @@ server.listen(port,function(err){
     }
     else{
     console.log(`Server is running on port ${port}`);
+    if (process.env.NODE_ENV === 'production') {
+      console.log('[startup] trust proxy:', app.get('trust proxy'));
+      console.log('[startup] SESSION_SECRET set:', Boolean(process.env.SESSION_SECRET));
+      console.log('[startup] GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL || '(not set)');
+      console.log('[startup] Google OAuth:', Boolean(env.google_client_id && env.google_client_secret));
+    }
     }
 });
