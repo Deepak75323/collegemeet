@@ -381,6 +381,39 @@ window.addEventListener( 'load', () => {
         // Per-partner mute preference (survives modal open/close)
         const partnerMuted = {};
 
+        function isPartnerModalOpen( partnerId ) {
+            const modal = document.getElementById( 'partner-video-modal' );
+            return !!( modal && !modal.hidden && modal.dataset.partnerId === partnerId );
+        }
+
+        /** Modal uses <video> for sound; hidden <audio> plays when modal is closed. */
+        function applyPartnerMute( partnerId ) {
+            const isMuted = !!partnerMuted[partnerId];
+            const hiddenAudio = document.getElementById( `remote-audio-${ partnerId }` );
+            const modalVideo = document.getElementById( 'partner-modal-video' );
+
+            if ( isPartnerModalOpen( partnerId ) ) {
+                if ( hiddenAudio ) hiddenAudio.muted = true;
+                if ( modalVideo ) modalVideo.muted = isMuted;
+            } else {
+                if ( hiddenAudio ) {
+                    hiddenAudio.muted = isMuted;
+                    hiddenAudio.play?.().catch( () => {} );
+                }
+                if ( modalVideo ) modalVideo.muted = isMuted;
+            }
+        }
+
+        function syncPartnerMuteButton() {
+            const btn = document.getElementById( 'partner-modal-mute' );
+            const icon = btn?.querySelector( 'i' );
+            const label = btn?.querySelector( 'span' );
+            const partnerId = document.getElementById( 'partner-video-modal' )?.dataset?.partnerId;
+            const isMuted = partnerId ? !!partnerMuted[partnerId] : false;
+            if ( icon ) icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            if ( label ) label.textContent = isMuted ? 'Unmute' : 'Mute';
+        }
+
         // Always-on hidden audio element — ensures remote audio plays even when
         // the partner video modal is closed.
         function upsertRemoteAudio( partnerId, stream ) {
@@ -394,8 +427,7 @@ window.addEventListener( 'load', () => {
                 document.body.appendChild( el );
             }
             el.srcObject = stream;
-            el.muted = partnerMuted[partnerId] || false;
-            el.play().catch( () => {} );
+            applyPartnerMute( partnerId );
         }
 
         function removeRemoteAudio( partnerId ) {
@@ -438,19 +470,13 @@ window.addEventListener( 'load', () => {
             const closeBtn = document.getElementById( 'partner-modal-close' );
             const backdrop = document.getElementById( 'partner-modal-backdrop' );
             const noVideo = document.getElementById( 'partner-modal-no-video' );
-            const hiddenAudio = document.getElementById( `remote-audio-${ partnerId }` );
-
             modal.dataset.partnerId = partnerId;
             if ( nameEl ) nameEl.textContent = peerNames[partnerId] || 'Partner';
-
-            // Modal video takes over audio — mute the always-on hidden audio element
-            if ( hiddenAudio ) hiddenAudio.muted = true;
 
             if ( vid ) {
                 // Force srcObject refresh so the video element picks up any track changes
                 vid.srcObject = null;
                 vid.srcObject = stream || null;
-                vid.muted = partnerMuted[partnerId] || false;
                 vid.hidden = false;
                 if ( noVideo ) noVideo.hidden = true;
 
@@ -474,15 +500,8 @@ window.addEventListener( 'load', () => {
                 }
             }
 
-            // Sync mute button label with current state
-            const syncMuteLabel = () => {
-                const icon = muteBtn?.querySelector( 'i' );
-                const label = muteBtn?.querySelector( 'span' );
-                const isMuted = partnerMuted[partnerId] || false;
-                if ( icon ) icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-                if ( label ) label.textContent = isMuted ? 'Unmute' : 'Mute';
-            };
-            syncMuteLabel();
+            applyPartnerMute( partnerId );
+            syncPartnerMuteButton();
 
             modal.removeAttribute( 'hidden' );
 
@@ -496,11 +515,9 @@ window.addEventListener( 'load', () => {
             };
 
             rebindBtn( muteBtn, () => {
-                partnerMuted[partnerId] = !( partnerMuted[partnerId] || false );
-                if ( vid ) vid.muted = partnerMuted[partnerId];
-                // Keep hidden audio in sync so unmuting after modal close works
-                if ( hiddenAudio ) hiddenAudio.muted = true; // still muted while modal is open
-                syncMuteLabel.call( document.getElementById( `partner-modal-mute` ) );
+                partnerMuted[partnerId] = !partnerMuted[partnerId];
+                applyPartnerMute( partnerId );
+                syncPartnerMuteButton();
             } );
 
             rebindBtn( hideBtn, () => {
@@ -523,12 +540,7 @@ window.addEventListener( 'load', () => {
             function closeModal() {
                 modal.setAttribute( 'hidden', '' );
                 if ( vid ) { vid.srcObject = null; }
-                // Hand audio back to the always-on hidden element
-                const ha = document.getElementById( `remote-audio-${ partnerId }` );
-                if ( ha ) {
-                    ha.muted = partnerMuted[partnerId] || false;
-                    ha.play?.().catch( () => {} );
-                }
+                applyPartnerMute( partnerId );
             }
 
             const freshClose = document.getElementById( 'partner-modal-close' );
