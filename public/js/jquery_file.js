@@ -101,23 +101,38 @@ tabContent=document.querySelectorAll('[data-content]')
 
 
      
-const loginText = document.querySelector(".title-text .login");
-const loginForm = document.querySelector("form.login");
-const loginBtn = document.querySelector("label.login");
-const signupBtn = document.querySelector("label.signup");
-const signupLink = document.querySelector("form .signup-link a");
-signupBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "-50%";
-  loginText.style.marginLeft = "-50%";
-});
-loginBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "0%";
-  loginText.style.marginLeft = "0%";
-});
-signupLink.onclick = (()=>{
-  signupBtn.click();
-  return false;
-});
+(function () {
+  var loginText = document.querySelector('.title-text .login');
+  var loginForm = document.querySelector('form.login');
+  var loginBtn = document.querySelector('label.login');
+  var signupBtn = document.querySelector('label.signup');
+  var signupLink = document.querySelector('form .signup-link a');
+  if (!signupBtn || !loginForm || !loginText) return;
+
+  function showSignup() {
+    loginForm.style.marginLeft = '-50%';
+    loginText.style.marginLeft = '-50%';
+  }
+
+  function showLogin() {
+    loginForm.style.marginLeft = '0%';
+    loginText.style.marginLeft = '0%';
+  }
+
+  signupBtn.addEventListener('click', showSignup);
+  loginBtn.addEventListener('click', showLogin);
+  if (signupLink) {
+    signupLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      signupBtn.click();
+    });
+  }
+
+  var signupRadio = document.getElementById('signup');
+  if (signupRadio && signupRadio.checked) {
+    showSignup();
+  }
+})();
 
 
 

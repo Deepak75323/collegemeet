@@ -201,44 +201,6 @@
 
   window.__validateNoticeForm = validateNoticeForm;
 
-  function initAuthTabs() {
-    var loginRadio = document.getElementById('login');
-    var signupRadio = document.getElementById('signup');
-    var loginForm = document.querySelector('.auth-form-inner .login');
-    var signupForm = document.querySelector('.auth-form-inner .signup');
-    if (!loginRadio || !signupRadio) return;
-
-    function sync() {
-      var isLogin = loginRadio.checked;
-      if (loginForm) {
-        loginForm.classList.toggle('active', isLogin);
-      }
-      if (signupForm) {
-        signupForm.classList.toggle('active', !isLogin);
-      }
-    }
-
-    loginRadio.addEventListener('change', sync);
-    signupRadio.addEventListener('change', sync);
-    sync();
-  }
-
-  function initPasswordToggles() {
-    document.querySelectorAll('.auth-field__toggle').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-target');
-        var input = document.getElementById(id);
-        if (!input) return;
-        var isPass = input.type === 'password';
-        input.type = isPass ? 'text' : 'password';
-        var icon = btn.querySelector('i');
-        if (icon) {
-          icon.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
-        }
-      });
-    });
-  }
-
   function initPageBackButton() {
     var backBtn = document.getElementById('cm-go-back');
     if (!backBtn) return;
@@ -257,7 +219,5 @@
     initScrollReveal();
     initNoticeDropzone();
     initPageBackButton();
-    initAuthTabs();
-    initPasswordToggles();
   });
 })();

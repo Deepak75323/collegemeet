@@ -869,202 +869,22 @@ button.cm-page-nav__btn {
   align-items: center;
   justify-content: center;
   padding: var(--cm-space-4);
+  background: var(--cm-bg);
 }
 
-.auth-card {
+/* Legacy sliding login/signup (right panel) */
+.auth-panel .auth-wrapper.wrapper {
+  top: auto;
+  left: auto;
+  margin: 0 auto;
+  max-width: 390px;
   width: 100%;
-  max-width: 420px;
-  padding: var(--cm-space-4);
-  border-radius: var(--cm-radius);
-  background: rgba(17, 24, 39, 0.9);
-  border: 1px solid var(--cm-border);
-  box-shadow: var(--cm-shadow);
 }
 
-.auth-tabs {
-  display: flex;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: var(--cm-space-3);
-  position: relative;
-}
-
-.auth-tabs input[type="radio"] {
-  display: none;
-}
-
-.auth-tabs label {
-  flex: 1;
-  text-align: center;
-  padding: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--cm-text-3);
-  cursor: pointer;
-  border-radius: 8px;
-  transition: color 0.2s;
-  margin: 0;
-  z-index: 1;
-}
-
-.auth-tabs input#login:checked ~ label[for="login"],
-.auth-tabs input#signup:checked ~ label[for="signup"] {
-  color: var(--cm-text);
-}
-
-.auth-tabs .slider-tab {
-  display: none;
-}
-
-.auth-form-inner .login,
-.auth-form-inner .signup {
-  display: none;
-}
-
-.auth-form-inner .login.active,
-.auth-form-inner .signup.active {
-  display: block;
-}
-
-.auth-field {
-  position: relative;
-  margin-bottom: var(--cm-space-2);
-}
-
-.auth-field input {
+body.auth-layout .auth-panel .g-sign-in-button {
+  display: inline-block;
   width: 100%;
-  padding: 16px 44px 8px 14px;
-  border-radius: var(--cm-radius-sm);
-  border: 1.5px solid var(--cm-border);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--cm-text);
-  font-family: var(--cm-font);
-  font-size: 0.9rem;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.auth-field label {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.875rem;
-  color: var(--cm-text-3);
-  pointer-events: none;
-  transition: all 0.2s ease;
-}
-
-.auth-field.is-active label,
-.auth-field.has-value label {
-  top: 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #818cf8;
-  background: var(--cm-surface);
-  padding: 0 6px;
-}
-
-.auth-field__toggle {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--cm-text-3);
-  cursor: pointer;
-  padding: 4px;
-}
-
-.auth-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--cm-space-2);
-  font-size: 0.8125rem;
-}
-
-.auth-remember {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--cm-text-3);
-  cursor: pointer;
-}
-
-.auth-submit {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: var(--cm-radius-sm);
-  font-family: var(--cm-font);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #fff;
-  background: var(--cm-gradient);
-  cursor: pointer;
-  margin-top: 8px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.auth-submit:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
-}
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: var(--cm-space-3) 0;
-  font-size: 0.75rem;
-  color: var(--cm-text-3);
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--cm-border);
-}
-
-.g-sign-in-button {
-  width: 100%;
-  border-radius: var(--cm-radius-sm) !important;
-  border: 1px solid var(--cm-border) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  overflow: hidden;
-}
-
-.g-sign-in-button a {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px !important;
-  text-decoration: none !important;
-  color: var(--cm-text-2) !important;
-  font-size: 0.875rem !important;
-  font-weight: 500 !important;
-}
-
-.g-sign-in-button img {
-  width: 20px;
-  height: 20px;
-}
-
-/* Hide legacy auth wrapper */
-body.auth-layout .wrapper {
-  all: unset;
-  display: contents;
-}
-
-body.auth-layout .wrapper .title-text,
-body.auth-layout .slide-controls .slider-tab {
-  display: none !important;
+  margin-top: 20px;
 }
 
 /* Scroll reveal */

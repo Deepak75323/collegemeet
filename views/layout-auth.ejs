@@ -25,7 +25,8 @@
             new Noty({ theme: 'relax', text: <%- JSON.stringify(flash.error[0]) %>, type: 'error', layout: 'topRight', timeout: 1500 }).show();
         <% } %>
     </script>
-    <script src="/js/app-premium.js"></script>
+    <script src="/js/jquery_file.js?v=<%= assetVersion %>"></script>
+    <script src="/js/app-premium.js?v=<%= assetVersion %>"></script>
     <%- script %>
 </body>
 </html>

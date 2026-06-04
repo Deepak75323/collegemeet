@@ -64,3 +64,7 @@
 [0mGET /room/?room=asdaslkjdsa_1rr9e7a [32m200[0m 84.363 ms - 17942[0m
 [0mGET /room/?room=asdaslkjdsa_1rr9e7a [32m200[0m 112.440 ms - 18085[0m
 [0mGET /room/?room=asdaslkjdsa_1rr9e7a [32m200[0m 70.981 ms - 18129[0m
+[0mGET / [32m200[0m 108.340 ms - 6414[0m
+[0mGET /images/home-img.png [33m404[0m 1066.570 ms - 158[0m
+[0mGET /signout [36m302[0m 114.519 ms - 58[0m
+[0mGET /signin [32m200[0m 67.097 ms - 4940[0m
